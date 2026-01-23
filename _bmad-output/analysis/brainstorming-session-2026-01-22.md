@@ -317,59 +317,6 @@ Policy:
 
 ---
 
-## Phase 1 总结：15 个核心设计决策
-
-| # | 决策 | 核心理由 |
-|---|---|---|
-| 1 | 统一为 Context Unit | 降复杂、机制复用 |
-| 2 | active/archived + 晋升 | 避免膨胀、保决策权、可追溯 |
-| 3 | 四类边（Reference/Activation/Containment/Derivation） | 传播清晰、可视化友好 |
-| 4 | Tag + Policy | 分类/行为正交、可迁移 |
-| 5 | Authority vs Maintainer | 权限与职责精确化 |
-| 6 | Event + Condition + 安全阀 | 可扩展与安全控制 |
-| 7 | ChangeSet/ImpactSet/Reason | 基于完整信息的确认 |
-| 8 | Event Sourcing | 溯源为地基、时间旅行 |
-| 9 | 包版本化 + Migration | 模板安全升级 |
-| 10 | UI 范式 + 核心愿景 | 让 AI "活"起来，有机体思维 |
-| 11 | Agent 推理溯源 + 双视图权限 | 底层记录一切、灵活配置入口 |
-| 12 | Snapshot 用户化 | 版本管理、可回溯、可命名 |
-| 13 | Branch + 冲突解决 + 两阶段重构 | 安全分支、可控重构 |
-| 14 | Query Scope + UI 约束选择 | 灵活引用、杜绝无效输入 |
-| 15 | 全量存储 + 按需激活 | 历史完整、查询高效 |
-
----
-
-## 待议事项（后续 Phase 讨论）
-
-**✅ 已解决：术语冲突**
-- 原“Trigger 边”已改名为 **Activation Edge**（表示“A 变化激活 B 维护流程”的关系）
-- **Trigger Rule**：Event + Condition + 安全阀（规则配置对象）
-- 两者现已明确区分
-
-**✅ 已补充：Containment 边的向下广播规则**
-
-**ContainmentEdge 的可选配置：**
-```
-├── bubbleUp: true（默认）——子级变化向上冒泡脏标记
-├── broadcastDown: false（默认）——父级变化不自动向下广播
-└── broadcastRules: [可选] 定义哪些父级属性变化时广播给哪些子级
-```
-
-**配置示例：**
-```yaml
-# 势力卡的 Containment Policy
-containment:
-  broadcastRules:
-    - when: "阵营立场" changed
-      notify: all children with tag #角色
-      action: suggest_review  # 建议审查，而非强制更新
-```
-
-**设计原则：**
-- 默认行为简单（不广播），降低认知负担
-- 高级用户可配置复杂规则
-- 广播动作默认为 `suggest_review`（建议审查），而非 `force_update`（强制更新），保留人类决策权
-
 ---
 
 ## 问题 11：Agent 推理过程如何纳入溯源？
@@ -522,7 +469,7 @@ Branch:
 | 回滚删除 | 回到该快照，删除后续事件（危险操作，需二次确认） |
 | 回溯重构 | 在该快照上修改，触发 Activation Edge 全链路重新评估，所有下游变更需用户逐一确认 |
 
-### 分支合并的冲突解决
+**分支合并的冲突解决：**
 
 当两个分支都修改了同一个 Context Unit 时，需要解决冲突：
 
@@ -539,7 +486,7 @@ Branch:
 
 ---
 
-### 回溯重构的两阶段方案
+**回溯重构的两阶段方案：**
 
 当用户选择「回溯重构」时，系统采用两阶段处理以降低复杂度：
 
@@ -611,7 +558,7 @@ Branch:
 - 「使用分支值」→ 选择分支
 - 「使用相对快照」→ 输入偏移量
 
-### UI 约束选择模式
+**UI 约束选择模式：**
 
 **核心原则：凡是有限集合的选择，都用 UI 约束而非自由输入。**
 
@@ -700,3 +647,58 @@ Event Sourcing + Snapshot + Branch 组合下，长期运行的项目（如长篇
 - 查询层：按需、范围限定、惰性加载
 
 **价值**：历史完整可追溯、查询性能可控、支持大规模长期项目。
+
+
+## Phase 1 总结：15 个核心设计决策
+
+| # | 决策 | 核心理由 |
+|---|---|---|
+| 1 | 统一为 Context Unit | 降复杂、机制复用 |
+| 2 | active/archived + 晋升 | 避免膨胀、保决策权、可追溯 |
+| 3 | 四类边（Reference/Activation/Containment/Derivation） | 传播清晰、可视化友好 |
+| 4 | Tag + Policy | 分类/行为正交、可迁移 |
+| 5 | Authority vs Maintainer | 权限与职责精确化 |
+| 6 | Event + Condition + 安全阀 | 可扩展与安全控制 |
+| 7 | ChangeSet/ImpactSet/Reason | 基于完整信息的确认 |
+| 8 | Event Sourcing | 溯源为地基、时间旅行 |
+| 9 | 包版本化 + Migration | 模板安全升级 |
+| 10 | UI 范式 + 核心愿景 | 让 AI "活"起来，有机体思维 |
+| 11 | Agent 推理溯源 + 双视图权限 | 底层记录一切、灵活配置入口 |
+| 12 | Snapshot 用户化 | 版本管理、可回溯、可命名 |
+| 13 | Branch + 冲突解决 + 两阶段重构 | 安全分支、可控重构 |
+| 14 | Query Scope + UI 约束选择 | 灵活引用、杜绝无效输入 |
+| 15 | 全量存储 + 按需激活 | 历史完整、查询高效 |
+
+---
+
+## 待议事项（后续 Phase 讨论）
+
+**✅ 已解决：术语冲突**
+- 原“Trigger 边”已改名为 **Activation Edge**（表示“A 变化激活 B 维护流程”的关系）
+- **Trigger Rule**：Event + Condition + 安全阀（规则配置对象）
+- 两者现已明确区分
+
+**✅ 已补充：Containment 边的向下广播规则**
+
+**ContainmentEdge 的可选配置：**
+```
+├── bubbleUp: true（默认）——子级变化向上冒泡脏标记
+├── broadcastDown: false（默认）——父级变化不自动向下广播
+└── broadcastRules: [可选] 定义哪些父级属性变化时广播给哪些子级
+```
+
+**配置示例：**
+```yaml
+# 势力卡的 Containment Policy
+containment:
+  broadcastRules:
+    - when: "阵营立场" changed
+      notify: all children with tag #角色
+      action: suggest_review  # 建议审查，而非强制更新
+```
+
+**设计原则：**
+- 默认行为简单（不广播），降低认知负担
+- 高级用户可配置复杂规则
+- 广播动作默认为 `suggest_review`（建议审查），而非 `force_update`（强制更新），保留人类决策权
+
