@@ -21,7 +21,7 @@ context_file: '总体想法.md'
 
 ### Context Guidance
 
-输入文档《总体想法.md》描述了一个通用 AI 上下文工程系统的完整构想，包括：
+输入文档`/Users/jingshun/Desktop/AI 上下文工程可视化项目/总体想法.md`描述了一个通用 AI 上下文工程系统的完整构想，包括：
 - 核心抽象：上下文单元（变量 + 卡片）
 - Agent 分层职责（系统级/变量级/审查级）
 - 变更传播与溯源系统
@@ -37,10 +37,18 @@ context_file: '总体想法.md'
 ## Phase 1: 发散探索（First Principles Thinking）
 
 ### 摘要
-本次头脑风暴以第一性原理审视原始设计，形成了可对外解释的结论：
-1) 统一“变量/卡片”为 Context Unit；2) 引入 active/archived 生命周期与“晋升”机制；
+本次头脑风暴以第一性原理审视原始设计，形成了 **11 个核心设计决策**：
+1) 统一“变量/卡片”为 Context Unit；
+2) 引入 active/archived 生命周期与“晋升”机制；
 3) 区分 Reference/Activation/Containment/Derivation 四类关系边；
-5) 以 Event Sourcing 作为溯源底座；6) UI 从“流程编排”转向“有机系统蓝图”。
+4) Tag + Policy 分离（分类与行为正交）；
+5) Authority Source vs Maintainer 分离；
+6) Trigger = Event + Condition + 安全阀；
+7) ChangeSet/ImpactSet/Reason 结构化确认；
+8) Event Sourcing 作为溯源底座；
+9) 配置包版本化 + Migration；
+10) UI 从“流程编排”转向“有机系统蓝图”；
+11) Agent 推理过程纳入溯源（底层记录一切，用户层选择性开放）。
 
 ---
 
@@ -136,6 +144,16 @@ context_file: '总体想法.md'
 - Tag 管“是什么”（如 `#人物` `#世界观` `#关键事实` `#不可变`）；
 - Policy 管“怎么对待”（确认模式、可写 Agent、可用模型等）。
 
+**Policy 结构示例：**
+```yaml
+Policy:
+  confirmation_strategy: confirm_required  # immediate / confirm_required / batch_queue / auto_trusted
+  allowed_maintainers: [Agent-A, Agent-B]
+  allowed_models: [claude-3, gpt-4]
+  requires_review: true
+  max_auto_propagation_depth: 3
+```
+
 **价值**：分类与行为正交，最大灵活与可迁移性。
 
 ---
@@ -164,45 +182,98 @@ context_file: '总体想法.md'
 
 ## 问题 6：触发机制够不够？条件/批量/链式爆炸如何处理？
 
+### 问题背景
+原始设计列出四种触发类型：用户输入、关联变量变更、定时触发、外部调用。这些是否足够覆盖实际场景？
+
+### 挑战
+> 1. 条件触发怎么办？比如“当章节数 > 10 时自动触发某流程”。
+> 2. 批量触发怎么办？用户选中一组变量统一更新。
+> 3. 链式爆炸怎么办？A→B→C→D 形成长链时，如何防止无限传播？
+
+### 讨论
+- 四种触发本质是**事件源**，不是触发机制本身；
+- 条件触发 = 事件源 + 条件过滤，不需要新增“第五种触发”；
+- 批量触发 = 多个事件的聚合处理，应在确认中心支持；
+- 链式爆炸需要系统级安全阀，而非依赖用户配置。
+
 ### 结论
 **Trigger = Event + Condition + 安全阀**
 - 事件源：user_input / unit_changed / time_tick / external_call / 自定义；
-- 条件：过滤何时触发；
+- 条件：可选的过滤规则，满足时才触发；
 - 安全阀：最大传播深度、频率限制/去抖、`impactSet` 超阈强制人工确认。
 
-**价值**：可扩展、不易过时、可控安全。
+**价值**：可扩展（不用加新触发类型）、不易过时、安全可控。
 
 ---
 
 ## 问题 7：确认机制如何结构化？
 
+### 问题背景
+原始设计提出四种确认模式：严格、宽松、批量接受、YOLO。这是正确方向，但“确认”的数据结构是什么？
+
+### 挑战
+> 用户在确认时需要知道什么？只是“接受/拒绝”吗？还是需要看到完整的变更上下文？
+
+### 讨论
+- 如果只是“是/否”开关，用户无法做出明智决策；
+- 用户需要知道：要改什么（ChangeSet）、会影响谁（ImpactSet）、为什么要改（Reason）；
+- 四种模式本质是“谁可以自动提交 ChangeSet”和“什么情况必须人工介入”的策略配置。
+
 ### 结论
 **ChangeSet + ImpactSet + Reason**
-- ChangeSet：要改什么；ImpactSet：会影响谁；Reason：为何而改（至少包含：触发事件 trigger、证据引用 evidence refs、可选的 agent rationale）。
-- 执行策略：immediate / confirm_required（默认）/ batch_queue / auto_trusted。这四种策略对应原设计的“严格/宽松/批量/YOLO”，具体行为差异由 Policy 定义。
+- ChangeSet：要改哪些单元、改成什么（可拆分接受）；
+- ImpactSet：会影响哪些下游（按层级/边类型计算）；
+- Reason：为何而改（触发事件 trigger、证据引用 evidence refs、可选 agent rationale）。
+- 执行策略：immediate / confirm_required（默认）/ batch_queue / auto_trusted。
 
-**价值**：让确认基于完整上下文，不是“是/否”开关。
+**价值**：让确认基于完整上下文，不是“是/否”开关；策略可按 Tag/Policy 精细配置。
 
 ---
 
 ## 问题 8：溯源系统应当是模块还是地基？
 
+### 问题背景
+原始设计将溯源称为“系统灵魂”，并列为十大模块之一。但这种定位是否足够？
+
+### 挑战
+> 如果溯源只是“模块之一”，它就可能被绕过或事后补充。如何让“强制溯源”成为架构必然而非约定？
+
+### 讨论
+- 溯源不应是“事后记录”，而应是“系统事实的定义方式”；
+- Event Sourcing 架构：当前状态 = 所有事件的折叠结果；
+- 这样溯源不是可选功能，而是数据存储的本质——无法绕过。
+
 ### 结论
 **Event Sourcing 作为溯源底座**
-- Event Store（不可变事件）→ Projection（当前状态）→ Snapshot（性能）→ 统一 Query API。
+- Event Store：不可变事件记录（谁在何时因何对哪些单元做了什么）；
+- Projection：当前状态视图（由事件计算得出）；
+- Snapshot：性能优化的状态快照；
+- 统一 Query API：UI 和 Agent 共用同一套查询接口。
 
-**价值**：强制溯源、时间旅行、Undo/Redo、统一查询模型。
+**价值**：强制溯源（架构必然）、时间旅行、Undo/Redo、Diff 对比、统一查询模型。
 
 ---
 
 ## 问题 9：模板/配置包会过时，如何安全升级？
 
+### 问题背景
+核心哲学是“系统不过时，模板可过时”。但如果官方小说模板升级了 schema，用户项目怎么办？
+
+### 挑战
+> 一年后你升级官方模板，用户的旧项目能否平滑迁移？如果不能，核心愿景就会被破坏。
+
+### 讨论
+- 没有 migration 机制，模板升级会导致用户项目崩溃；
+- 这不是“以后再考虑”的问题，必须从第一天设计；
+- 配置包需要版本号 + 迁移规则。
+
 ### 结论
 **版本化 + Migration**
 - 配置包声明 `schemaVersion`；
-- 提供从旧版本的迁移脚本/规则。
+- 提供从旧版本的迁移脚本/规则（哪怕初期很简单）；
+- 系统在加载配置包时检测版本，自动或提示运行迁移。
 
-**价值**：兑现“系统不过时，模板可过时”。
+**价值**：兑现“系统不过时，模板可过时”的核心承诺；用户项目可安全升级。
 
 ---
 
@@ -222,7 +293,7 @@ context_file: '总体想法.md'
 
 ---
 
-## Phase 1 总结：10 个核心设计决策
+## Phase 1 总结：11 个核心设计决策
 
 | # | 决策 | 核心理由 |
 |---|---|---|
@@ -236,6 +307,7 @@ context_file: '总体想法.md'
 | 8 | Event Sourcing | 溯源为地基、时间旅行 |
 | 9 | 包版本化 + Migration | 模板安全升级 |
 | 10 | UI 范式：有机系统蓝图 | 引导正确心智模型 |
+| 11 | Agent 推理溯源 | 底层记录一切、用户层选择性开放 |
 
 ---
 
@@ -246,8 +318,77 @@ context_file: '总体想法.md'
 - **Trigger Rule**：Event + Condition + 安全阀（规则配置对象）
 - 两者现已明确区分
 
-**🔄 待补充：Containment 边的向下广播规则**
-- 默认行为：Containment 边仅向上冒泡脏标记
-- 可选配置：父级可定义「向下广播规则」，指定哪些属性变化需通知子级
-- 示例：「势力卡」的「阵营立场」变化 → 广播给其包含的「角色卡」重新评估
-- 设计原则：提供合理默认 + 开放用户自定义，降低认知负担
+**✅ 已补充：Containment 边的向下广播规则**
+
+**ContainmentEdge 的可选配置：**
+```
+├── bubbleUp: true（默认）——子级变化向上冒泡脏标记
+├── broadcastDown: false（默认）——父级变化不自动向下广播
+└── broadcastRules: [可选] 定义哪些父级属性变化时广播给哪些子级
+```
+
+**配置示例：**
+```yaml
+# 势力卡的 Containment Policy
+containment:
+  broadcastRules:
+    - when: "阵营立场" changed
+      notify: all children with tag #角色
+      action: suggest_review  # 建议审查，而非强制更新
+```
+
+**设计原则：**
+- 默认行为简单（不广播），降低认知负担
+- 高级用户可配置复杂规则
+- 广播动作默认为 `suggest_review`（建议审查），而非 `force_update`（强制更新），保留人类决策权
+
+---
+
+## 问题 11：Agent 推理过程如何纳入溯源？
+
+### 问题背景
+每个变量/卡片可以绑定 AI Agent 负责。当 Agent-A 更新变量 X 后，关联变量的 Agent-B 会收到通知。Agent-B 可能需要查询“Agent-A 为什么更新 X”来做出更准确的判断。
+
+### 挑战
+> 溯源系统是否需要记录 Agent 的完整推理过程？Agent 对溯源系统的查询本身是否也要记录？
+
+### 讨论
+- 底层设计理念：**底层记录一切，用户层选择性开放**
+- Agent 的完整推理过程（Chain of Thought）应该记录
+- Agent 的溯源查询行为本身也应该记录
+- 这符合核心理念：高度模块化底层 + 高度用户自定义 = 立于不败之地
+
+### 结论
+**Event 结构扩展：**
+```yaml
+Event:
+  # 基础信息
+  timestamp, actor, action, subject, changes
+  
+  # Agent 推理上下文（新增）
+  reasoning:
+    trigger_event: 触发此次更新的事件
+    inputs_read: Agent 读取了哪些 Context Unit
+    traceability_queries: Agent 做了哪些溯源查询
+    chain_of_thought: Agent 完整推理过程
+    conclusion: 最终结论
+  
+  # 传播信息（新增）
+  notifications_sent: 通知了哪些下游 Agent
+```
+
+**Agent 溯源查询 API：**
+| 查询 | 权限级别 |
+|------|----------|
+| `getLatestChange(X)` | 基础 |
+| `getChangeTrigger(X)` | 标准 |
+| `getAgentRationale(X)` | 高级 |
+| `getInputsConsidered(X)` | 高级 |
+| `traceBack(X, depth)` | 完整 |
+
+**关键原则：**
+- 底层 Event Store 记录一切（推理过程、查询行为、通知记录）
+- 用户可配置每个 Agent 的查询权限级别
+- 用户可在 Agent 规则（Prompt）中指定何时调用溯源查询
+
+**价值：**Agent 间协作有据可查、可追溯、可调试；用户可按需控制复杂度。
