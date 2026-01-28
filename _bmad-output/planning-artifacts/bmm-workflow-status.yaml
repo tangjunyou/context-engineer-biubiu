@@ -18,7 +18,7 @@ workflow_path: "method-greenfield.yaml"
 
 workflow_status:
   # Phase 1: Analysis (Optional)
-  brainstorm-project: optional
+  brainstorm-project: "_bmad-output/analysis/brainstorming-session-2026-01-22.md"
   research: skipped
   product-brief: skipped
 
