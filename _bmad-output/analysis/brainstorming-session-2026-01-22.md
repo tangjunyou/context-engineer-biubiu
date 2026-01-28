@@ -1,12 +1,16 @@
 ---
-stepsCompleted: [1]
+stepsCompleted: [1, 2, 3]
 inputDocuments: ['总体想法.md']
 session_topic: '通用 AI 上下文工程系统设计完善与风险识别'
 session_goals: '将构想从想法稿升级为可执行的系统设计蓝图'
 selected_approach: 'progressive-flow'
-techniques_used: ['First Principles Thinking', 'Morphological Analysis', 'Six Thinking Hats', 'Constraint Mapping']
-ideas_generated: []
+techniques_used: ['First Principles Thinking', 'Morphological Analysis', 'Six Thinking Hats', 'Constraint Mapping', 'Failure Analysis']
+ideas_generated: 10
 context_file: '总体想法.md'
+technique_execution_complete: true
+facilitation_notes: '用户展现深刻系统思维，主动识别核心失败风险并深入分析具体层面，提供完整的设计方案'
+session_continued: true
+continuation_date: '2026-01-28'
 ---
 
 # Brainstorming Session Results
@@ -701,4 +705,998 @@ containment:
 - 默认行为简单（不广播），降低认知负担
 - 高级用户可配置复杂规则
 - 广播动作默认为 `suggest_review`（建议审查），而非 `force_update`（强制更新），保留人类决策权
+
+---
+
+## Technique Execution Results
+
+**Failure Analysis:**
+
+- **Interactive Focus:** 识别系统可能失败的两个核心维度——架构模块化与用户自由度；后扩展至产品体验与协作机制
+- **Key Breakthroughs:** 
+  - 风险 #1: 核心概念（边类型、状态）缺乏可扩展性
+  - 风险 #2: Event Sourcing 作为唯一底座可能不适用所有场景
+  - 风险 #3: active/archived 二元生命周期可能不够
+  - 风险 #4: Authority/Maintainer 二元权限可能不足
+  - 风险 #5: 一次性确认假设限制复杂确认流程
+  - 风险 #6: 缺乏用户可定义的上层抽象（Relation Template、Unit Schema、Behavior Package）
+  - 风险 #7: 缺乏轻量级运行时控制层（临时覆盖、Dry-run、暂停状态、轻量沙盒）
+  - 风险 #8: 上手体验与学习曲线（三层体验架构、概念延迟暴露、UI双轨设计）
+  - 风险 #9: Agent 错误级联与批量恢复（因果链视图、批量操作、高语义检测）
+  - 风险 #10: 多人协作机制（冲突处理、确认归属、通知机制、权限模型）
+  - 待设计 #1: 开放生态 / 外部连接能力
+  - 项目框架补充: 三种运行模式（自动化模式 / 单人工作台 / 多人工作台）
+- **User Creative Strengths:** 系统性思维、主动深入分析、清晰的问题分解与结构化表达、提供完整设计方案
+- **Energy Level:** 高度投入，主动提供详细分析和具体建议，持续深入探索
+
+**Overall Creative Journey:** 从宏观的两大核心失败风险出发，逐层深入到具体设计决策审视和用户场景分析，进而扩展到产品体验和协作机制维度，最终产出 10 个关键风险、1 个待设计领域、1 个项目框架补充。
+
+### Creative Facilitation Narrative
+
+_用户首先识别出项目可能失败的两个核心原因：架构不够模块化和功能设计不够灵活。在架构模块化探索中，通过尖锐场景问题分析了 5 个高风险的硬编码假设。在用户自由度探索中，用户主动深入分析，识别出「缺乏上层抽象」和「缺乏轻量级运行时控制」两个关键盲点，并给出了具体的缺失能力清单和建议机制。随后探索扩展到产品体验维度，用户提供了完整的「三层体验架构」和「第一个哇时刻」设计方案。在 Agent 错误级联探索中，用户分析了现有保护与缺口，提出因果链管理器等补充设计。最后在多人协作维度，用户补充了三种运行模式框架，并针对同时编辑、确认归属、通知机制等问题提供了完整的设计方案。_
+
+### Session Highlights
+
+**User Creative Strengths:** 系统性思维、主动深入分析、清晰的问题分解和结构化表达、能够提供完整可执行的设计方案
+**AI Facilitation Approach:** 提出尖锐场景问题，引导用户思考具体的失败情境，逐层深入不同维度
+**Breakthrough Moments:** 「缺乏上层抽象」、「缺乏轻量级运行时控制」、「三层体验架构」、「三种运行模式框架」、「多人协作完整设计」
+**Energy Flow:** 持续高能量，用户主动提供详细分析和结构化建议，每个问题都给出完整解决方案
+
+---
+
+## Phase 2 详细记录：Failure Analysis
+
+### 两大核心失败风险维度
+
+用户识别出项目可能失败的两个核心原因：
+
+1. **底层技术架构不够模块化** → 导致修复和迭代非常缓慢
+2. **功能设计不够灵活** → 用户没有办法自由 DIY，自由创造各种可能
+
+---
+
+### 风险清单总览
+
+| # | 风险 | 维度 | 等级 |
+|---|------|------|------|
+| 1 | 核心概念的可扩展性 | 架构模块化 | 🔴 高 |
+| 2 | Event Sourcing 唯一性 | 架构模块化 | 🔴 高 |
+| 3 | 二元生命周期 | 架构模块化 | 🟡 中 |
+| 4 | 二元权限模型 | 架构模块化 | 🟡 中 |
+| 5 | 一次性确认假设 | 架构模块化 | 🟡 中 |
+| 6 | 缺乏上层抽象 | 用户自由度 | 🔴 高 |
+| 7 | 缺乏轻量级运行时控制 | 用户自由度 | 🟡 中 |
+| 8 | 上手体验与学习曲线 | 产品体验 | 🔴 高（但可控） |
+| 9 | Agent 错误级联与批量恢复 | 产品体验 | 🟡 中 |
+| 10 | 多人协作机制 | 协作机制 | 🟡 中 |
+
+---
+
+### 维度一：架构模块化（风险 #1-5）
+
+#### 风险 #1: 核心概念的可扩展性
+
+**风险评级：** 🔴 高（架构地基，改动成本极高）
+
+**核心问题：** 边类型、生命周期状态等「核心概念」被硬编码在系统各处，缺乏统一的扩展机制，一旦需要修改将触发全系统重构。
+
+**当前设计中的硬编码概念：**
+
+| 核心概念 | 当前实现 | 硬编码位置 | 扩展难度 |
+|----------|----------|------------|----------|
+| 边类型 | 四种固定类型（Reference/Activation/Containment/Derivation） | 存储层、传播引擎、UI | 🔴 高 |
+| 生命周期状态 | active/archived 二元 | 状态机、权限逻辑、传播规则 | 🟡 中 |
+| 触发事件类型 | user_input/unit_changed/time_tick/external_call | 事件处理器、规则引擎 | 🟡 中 |
+| 确认策略 | immediate/confirm_required/batch_queue/auto_trusted | 确认中心、Policy 配置 | 🟢 低 |
+
+**尖锐场景：**
+
+> 半年后发现「四种边类型」有根本性缺陷——需要第五种边（如「互斥关系 Exclusion」表示 A 和 B 不能同时为真），或 Containment 和 Activation 的边界定义错误需要重新划分。
+
+**影响分析：**
+
+| 受影响模块 | 影响程度 | 具体影响 |
+|------------|----------|----------|
+| 存储层 | 🔴 高 | Event 结构需要支持新边类型、索引重建、查询逻辑修改 |
+| 传播引擎 | 🔴 高 | 传播规则需要重写、安全阀逻辑需要适配 |
+| UI 可视化 | 🟡 中 | 新增边类型图标、过滤器选项、颜色配置 |
+| Agent 行为 | 🟡 中 | Agent 规则中的边类型判断逻辑需要更新 |
+| 配置/模板 | 🟢 低 | 配置 schema 更新、模板迁移 |
+
+**建议补充的设计：**
+
+**1. 核心概念注册机制**
+
+```yaml
+# 边类型注册示例
+EdgeTypeRegistry:
+  builtin_types:
+    - name: Reference
+      propagation: trigger_downstream_evaluation
+      ui: { color: "#4A90D9", icon: "link" }
+    - name: Activation
+      propagation: trigger_maintainer_workflow
+      ui: { color: "#7B68EE", icon: "zap" }
+    - name: Containment
+      propagation: bubble_up_dirty_flag
+      ui: { color: "#50C878", icon: "folder" }
+    - name: Derivation
+      propagation: none_record_only
+      ui: { color: "#808080", icon: "git-branch" }
+  
+  extension_api:
+    # 用户/模板可注册新边类型
+    register_edge_type:
+      name: "Exclusion"  # 互斥关系
+      propagation: "notify_conflict_check"
+      ui: { color: "#FF6B6B", icon: "x-circle" }
+      validation: "source.value AND target.value => conflict"
+```
+
+**2. 抽象层设计原则**
+
+| 层级 | 职责 | 可扩展性 |
+|------|------|----------|
+| **Core Interface** | 定义边/状态的抽象接口（IEdgeType, ILifecycleState） | 稳定，不变 |
+| **Builtin Implementation** | 四种边类型、二元状态的默认实现 | 内置，可覆盖 |
+| **Extension Layer** | 用户自定义类型注册、模板定义的领域特定类型 | 完全开放 |
+
+**与核心架构的关系：**
+
+这**需要从第一天设计**，而非事后补充。核心概念的注册机制应该是架构的一部分，而非「可选扩展」。如果底层硬编码了四种边类型，后期改造成本极高——需要修改存储 schema、重写传播引擎、更新所有 UI 组件。
+
+---
+
+#### 风险 #2: Event Sourcing 作为唯一底座
+
+**风险评级：** 🔴 高（架构地基，几乎无法更换）
+
+**核心问题：** Event Sourcing 被设定为系统唯一的数据存储范式，但并非所有场景都适合 ES，某些高频/简单场景可能被 ES 的复杂度拖累。
+
+**Event Sourcing 的优势与局限：**
+
+| 维度 | ES 优势 | ES 局限 |
+|------|---------|----------|
+| 溯源能力 | ✅ 完整历史记录、时间旅行 | — |
+| 审计合规 | ✅ 不可变日志、完整审计链 | — |
+| 调试能力 | ✅ 可重放、可追溯因果 | — |
+| 查询性能 | — | ❌ 需要 Projection，复杂查询成本高 |
+| 开发复杂度 | — | ❌ 学习曲线陡峭，早期迭代慢 |
+| 高频写入 | — | ❌ 实时协作编辑可能产生大量事件 |
+| 批量操作 | — | ❌ 大批量导入需要生成海量事件 |
+
+**尖锐场景：**
+
+| 场景 | 问题 |
+|------|------|
+| **实时协作编辑** | 多人同时编辑一个 Context Unit，每个字符变化都生成事件？ |
+| **大批量数据导入** | 导入 10000 个角色，需要生成 10000+ 个创建事件？ |
+| **早期快速迭代** | 团队还在探索产品形态，ES 复杂度是否拖慢开发速度？ |
+| **简单 CRUD 场景** | 用户只是改个名字，是否需要完整的事件链？ |
+
+**建议补充的设计：**
+
+**1. 混合存储模式**
+
+```yaml
+StorageStrategy:
+  # 核心数据：强制使用 Event Sourcing
+  event_sourced:
+    - ContextUnit.content
+    - ContextUnit.edges
+    - ContextUnit.policy
+    - Agent.decisions
+  
+  # 辅助数据：可选简化存储
+  optional_crud:
+    - UserPreferences      # 用户偏好设置
+    - UIState              # 界面状态
+    - Cache                # 缓存数据
+    - DraftBuffer          # 实时编辑缓冲区（定期合并为事件）
+  
+  # 批量操作：聚合事件模式
+  batch_mode:
+    strategy: aggregate_then_commit
+    description: "批量导入时先在内存聚合，最后生成一个 BatchImportEvent"
+```
+
+**2. 实时编辑的缓冲策略**
+
+```yaml
+RealtimeEditBuffer:
+  # 实时编辑不立即生成事件
+  buffer_duration: 5s          # 缓冲 5 秒
+  merge_strategy: last_write   # 合并为最终状态
+  commit_trigger:
+    - user_stops_typing: 3s    # 停止输入 3 秒后提交
+    - explicit_save: true      # 用户主动保存
+    - buffer_full: 100_changes # 缓冲区满
+  
+  # 提交时生成一个合并事件，而非 N 个字符事件
+  event_type: ContentUpdated
+  includes: [before_snapshot, after_snapshot, change_summary]
+```
+
+**与核心架构的关系：**
+
+这**需要在架构设计时预留接口**，而非事后补丁。建议：
+- 定义 `IStorageAdapter` 接口，ES 是默认实现
+- 允许特定模块使用简化存储适配器
+- 批量操作和实时编辑有专门的缓冲/聚合机制
+
+---
+
+#### 风险 #3: active/archived 二元生命周期
+
+**风险评级：** 🟡 中（可扩展，但需要提前设计状态机）
+
+**核心问题：** 二元状态假设过于简化，无法表达实际场景中的丰富生命周期需求，如草稿、待审、锁定、弃用等。
+
+**当前设计 vs 实际需求：**
+
+| 实际需求 | 当前设计支持 | 缺口 |
+|----------|--------------|------|
+| 草稿（未完成，不参与系统） | ❌ | 没有 `draft` 状态 |
+| 活跃（正常参与系统） | ✅ `active` | — |
+| 待审核（已提交，等待确认） | ❌ | 没有 `pending_review` 状态 |
+| 锁定（临时冻结，保留引用） | ❌ | 没有 `locked` 状态 |
+| 弃用（标记过时，但保留引用） | ❌ | 没有 `deprecated` 状态 |
+| 归档（只读存档） | ✅ `archived` | — |
+
+**尖锐场景：**
+
+| 场景 | 用户需求 | 当前设计的问题 |
+|------|----------|----------------|
+| **草稿创作** | 「这个角色还没想好，先存着但别参与系统」 | 只能创建为 active（会触发传播）或不创建 |
+| **内容审核** | 「AI 生成的内容需要人工审核后才能生效」 | 没有「待审核」状态，只能用确认队列模拟 |
+| **临时冻结** | 「这个角色暂时不动，但别归档，我还要引用」 | locked 和 archived 语义不同，但只有 archived |
+| **弃用标记** | 「这个设定过时了，但旧章节还在引用，不能删」 | 没有 deprecated 状态 |
+
+**建议补充的设计：**
+
+**1. 可扩展状态枚举**
+
+```yaml
+LifecycleStateRegistry:
+  builtin_states:
+    - name: draft
+      description: "草稿，不参与依赖图和传播"
+      participation: { dependency_graph: false, propagation: false, editable: true }
+      transitions_to: [active, archived]
+    
+    - name: active
+      description: "活跃，完全参与系统"
+      participation: { dependency_graph: true, propagation: true, editable: true }
+      transitions_to: [locked, deprecated, archived]
+    
+    - name: pending_review
+      description: "待审核，可见但不触发传播"
+      participation: { dependency_graph: true, propagation: false, editable: false }
+      transitions_to: [active, archived]
+    
+    - name: locked
+      description: "锁定，参与系统但不可编辑"
+      participation: { dependency_graph: true, propagation: true, editable: false }
+      transitions_to: [active, archived]
+    
+    - name: deprecated
+      description: "弃用，保留引用但标记过时"
+      participation: { dependency_graph: true, propagation: false, editable: false }
+      ui_hint: "显示删除线，提示用户更新引用"
+      transitions_to: [archived]
+    
+    - name: archived
+      description: "归档，只读存档"
+      participation: { dependency_graph: false, propagation: false, editable: false }
+      transitions_to: [active]  # 可晋升
+  
+  extension_api:
+    # 模板可定义领域特定状态
+    register_state:
+      name: "killed"  # 小说模板：角色死亡状态
+      inherits_from: deprecated
+      custom_behavior: "触发死亡相关的级联更新"
+```
+
+**2. 状态与行为映射**
+
+| 状态 | 依赖图 | 传播 | 可编辑 | 可删除 | UI 提示 |
+|------|--------|------|--------|--------|----------|
+| draft | ❌ | ❌ | ✅ | ✅ | 灰色/虚线边框 |
+| active | ✅ | ✅ | ✅ | ⚠️ 需确认 | 正常显示 |
+| pending_review | ✅ | ❌ | ❌ | ❌ | 黄色标记 |
+| locked | ✅ | ✅ | ❌ | ❌ | 锁图标 |
+| deprecated | ✅ | ❌ | ❌ | ⚠️ 需确认 | 删除线 |
+| archived | ❌ | ❌ | ❌ | ✅ | 归档图标 |
+
+**与核心架构的关系：**
+
+这**可以渐进实现**，但需要提前设计状态机接口：
+- 状态存储为字符串/枚举，而非布尔值
+- 状态转换规则可配置
+- UI 和传播引擎通过状态属性（而非硬编码状态名）判断行为
+
+---
+
+#### 风险 #4: Authority Source vs Maintainer 二元权限
+
+**风险评级：** 🟡 中（可扩展，但需要预留权限模型接口）
+
+**核心问题：** 「谁说了算」和「谁负责维护」的二元划分在简单场景够用，但复杂团队协作场景需要更精细的权限层级和动态授权机制。
+
+**当前设计 vs 复杂场景需求：**
+
+| 复杂场景需求 | 当前设计支持 | 缺口 |
+|--------------|--------------|------|
+| 单一权威 + 单一维护者 | ✅ | — |
+| 多级审批链（初审 → 复审 → 终审） | ❌ | 只有一个 Authority Source |
+| 角色组继承（「编辑组」继承权限） | ❌ | 没有角色组概念 |
+| 临时授权（「本周让实习生帮忙」） | ❌ | 没有时效性授权 |
+| 权限委托（「我休假，授权给同事」） | ❌ | 没有委托机制 |
+| 条件性权限（「只能编辑自己创建的」） | ❌ | 没有条件表达式 |
+
+**尖锐场景：**
+
+| 场景 | 需求 | 当前设计的问题 |
+|------|------|----------------|
+| **多级审批** | 重要变更需要主编 → 总编 → 主编辑三级审批 | 只有一个 Authority Source，无法表达审批链 |
+| **团队协作** | 「世界观组」的所有成员都能维护世界观设定 | 没有角色组，需要逐个配置 |
+| **临时授权** | 主创休假一周，临时授权给副手 | 没有时效性授权，需要手动改回 |
+| **新人培训** | 新人只能编辑自己创建的角色，不能动他人的 | 没有条件性权限 |
+
+**建议补充的设计：**
+
+**1. 扩展权限模型**
+
+```yaml
+PermissionModel:
+  # 权限层级（从高到低）
+  permission_levels:
+    - owner          # 完全控制，可删除、可转移所有权
+    - approver       # 审批权，可批准/拒绝变更
+    - maintainer     # 维护权，可提交变更建议
+    - contributor    # 贡献权，可提交但需审批
+    - viewer         # 查看权，只读
+  
+  # 单元级权限配置
+  unit_permissions:
+    authority_chain:        # 审批链（替代单一 Authority Source）
+      - level: 1
+        role: "section_editor"
+        auto_approve_if: "change_size < 100_chars"
+      - level: 2
+        role: "chief_editor"
+        required_for: "structural_changes"
+    
+    maintainers:            # 维护者列表（支持多个）
+      - user: "agent-character-dev"
+        scope: "all"
+      - user: "human-author"
+        scope: "manual_override"
+    
+    contributors:           # 贡献者
+      - group: "intern_team"
+        condition: "created_by_self"  # 条件性权限
+```
+
+**2. 动态授权机制**
+
+```yaml
+DynamicAuthorization:
+  # 临时授权
+  temporary_grants:
+    - grantee: "user-bob"
+      permission: maintainer
+      scope: ["character-*"]      # 通配符范围
+      valid_from: "2026-01-28"
+      valid_until: "2026-02-04"   # 一周后自动失效
+      granted_by: "user-alice"
+      reason: "休假期间临时授权"
+  
+  # 权限委托
+  delegation:
+    - delegator: "user-alice"
+      delegatee: "user-bob"
+      permissions: [approver, maintainer]
+      scope: "all_owned_units"
+      can_re_delegate: false      # 不可转委托
+      valid_until: "2026-02-04"
+```
+
+**3. 角色组与继承**
+
+```yaml
+RoleGroups:
+  groups:
+    - name: "worldbuilding_team"
+      members: ["user-a", "user-b", "user-c"]
+      default_permission: maintainer
+      scope_pattern: "worldbuilding/*"
+    
+    - name: "character_team"
+      members: ["user-d", "user-e"]
+      default_permission: maintainer
+      scope_pattern: "character/*"
+  
+  inheritance:
+    # 子组继承父组权限
+    - child: "intern_team"
+      parent: "character_team"
+      permission_override: contributor  # 降级为 contributor
+```
+
+**与核心架构的关系：**
+
+这**可以渐进扩展**，但需要：
+- Authority Source 从单值改为列表/链结构
+- Maintainer 支持多个，带条件和范围
+- 预留角色组和动态授权的数据结构
+
+---
+
+#### 风险 #5: ChangeSet/ImpactSet/Reason 一次性确认假设
+
+**风险评级：** 🟡 中（用户体验核心，改动成本高但可渐进）
+
+**核心问题：** 当前确认模型假设确认是「一次性决策」（接受或拒绝），但复杂场景需要更精细的确认流程，如分阶段、条件性、协商式确认。
+
+**当前确认选项 vs 复杂需求：**
+
+| 确认需求 | 当前支持 | 缺口 |
+|----------|----------|------|
+| 完全接受 | ✅ | — |
+| 完全拒绝 | ✅ | — |
+| 部分接受（「接受 A 但拒绝 B」） | ❌ | ChangeSet 是原子的 |
+| 条件接受（「接受但改这个值」） | ❌ | 没有编辑后接受 |
+| 延迟决策（「先放着，稍后处理」） | ❌ | 没有「稍后」状态 |
+| 请求修改（「不对，请重新生成」） | ❌ | 只能拒绝，没有「重做」 |
+| 协商确认（「需要 A 和 B 都同意」） | ❌ | 单人确认模型 |
+| 分阶段确认（「先确认内容，再确认传播」） | ❌ | 内容和传播绑定 |
+
+**尖锐场景：**
+
+| 场景 | 用户需求 | 当前设计的问题 |
+|------|----------|----------------|
+| **部分接受** | Agent 建议改 3 处，但第 2 处不对 | 只能全部接受或全部拒绝 |
+| **微调后接受** | AI 写的基本对，但有个词想改一下 | 接受后再编辑会生成新事件，溯源链断裂 |
+| **暂缓处理** | 现在没空仔细看，先标记稍后处理 | 没有「暂缓」状态，确认队列会堆积 |
+| **多人协商** | 这个变更涉及两个人的内容，需要两人都同意 | 只有单人确认，另一人只收到通知 |
+| **分步确认** | 先确认内容没问题，但不确定要不要触发传播 | 内容确认和传播确认是绑定的 |
+
+**建议补充的设计：**
+
+**1. 扩展确认选项**
+
+```yaml
+ConfirmationOptions:
+  # 基础选项（当前已有）
+  basic:
+    - accept              # 接受并传播
+    - reject              # 拒绝
+  
+  # 扩展选项（建议新增）
+  extended:
+    - accept_partial:     # 部分接受
+        description: "选择性接受 ChangeSet 中的部分变更"
+        ui: "展示 ChangeSet 列表，每项可单独勾选"
+    
+    - accept_with_edit:   # 编辑后接受
+        description: "接受但允许在确认时微调内容"
+        ui: "打开编辑器，修改后确认"
+        traceability: "记录为 AcceptWithModification 事件"
+    
+    - accept_no_propagate: # 接受但不传播
+        description: "接受变更但暂停传播，稍后手动触发"
+        ui: "确认后进入 pending_propagation 状态"
+    
+    - defer:              # 延迟处理
+        description: "标记为稍后处理，不阻塞其他确认"
+        ui: "移入 deferred 队列，可设置提醒时间"
+    
+    - request_revision:   # 请求修改
+        description: "拒绝当前版本，请求 Agent 重新生成"
+        ui: "可附加修改指导"
+        triggers: "重新触发 Agent 工作流"
+```
+
+**2. 分阶段确认流程**
+
+```yaml
+StagedConfirmation:
+  stages:
+    - stage: content_review
+      description: "审查变更内容是否正确"
+      options: [accept, reject, accept_with_edit, request_revision]
+      required: true
+    
+    - stage: impact_review
+      description: "审查传播影响是否可接受"
+      options: [propagate_all, propagate_selected, defer_propagation]
+      required: false  # 可跳过，使用默认策略
+      shows: ImpactSet 可视化
+    
+    - stage: final_confirm
+      description: "最终确认"
+      options: [confirm, cancel]
+      shows: 完整变更摘要
+  
+  quick_mode:
+    # 简单变更可跳过分阶段，直接确认
+    condition: "impact_set.size < 3 AND change_size < 500_chars"
+    action: "合并为单步确认"
+```
+
+**3. 多方协商确认**
+
+```yaml
+CollaborativeConfirmation:
+  # 当变更涉及多个负责人时
+  triggers:
+    - condition: "affected_units have multiple authority_sources"
+    - condition: "policy.requires_multi_party_approval"
+  
+  workflow:
+    - collect_approvals:
+        required_parties: [authority_sources of affected_units]
+        approval_threshold: all | majority | any
+        timeout: 48h
+    
+    - on_conflict:
+        # 如果各方意见不一致
+        options:
+          - escalate_to_admin
+          - use_authority_chain  # 按审批链升级
+          - create_discussion    # 创建讨论线程
+    
+    - on_timeout:
+        action: "notify_all_and_defer"
+  
+  ui:
+    shows: "各方确认状态、意见、讨论线程"
+    allows: "在确认界面直接讨论"
+```
+
+**与核心架构的关系：**
+
+这**可以渐进实现**，核心架构改动较小：
+- ChangeSet 结构支持拆分（每项变更有独立 ID）
+- 确认 Event 类型扩展（AcceptPartial, AcceptWithEdit, Defer 等）
+- 确认状态机扩展（支持分阶段、多方协商）
+- UI 确认组件需要重构以支持新选项
+
+---
+
+### 维度二：用户自由度（风险 #6-7）
+
+#### 风险 #6: 缺乏用户可定义的上层抽象
+
+**核心问题：** 用户被迫在底层机制上手工编织，而无法在更高层次上设计模式。
+
+**三个层面的具体表现：**
+
+| 层面 | 用户想要 | 当前设计 | 问题 |
+|------|----------|----------|------|
+| **关系层** | 定义「暗恋关系」模板，自动包含语义标记、传播行为、默认规则 | Tag 管语义，Edge 管行为，两者分离 | 每次都要手动组合 |
+| **类型层** | 创建「NPC 模板」，所有 NPC 自动继承字段结构和行为规则 | Context Unit 是扁平的统一抽象 | 没有模板/实例的继承机制 |
+| **规则层** | 定义「角色死亡」行为包，包含状态变更、物品转移、关系解除、通知触发 | 每个规则独立配置 | 无法打包复用 |
+
+**建议补充的设计：**
+
+| 缺失的抽象 | 作用 |
+|------------|------|
+| **Relation Template（关系模板）** | 让用户定义语义+行为打包的关系类型 |
+| **Unit Schema / Archetype（单元原型）** | 让 Context Unit 支持模板继承 |
+| **Behavior Package（行为包）** | 让用户把一组规则打包成可复用模式 |
+
+#### 风险 #7: 缺乏轻量级运行时控制层
+
+**现有能力分析：**
+
+| 能力 | 现有支持 | 局限性 |
+|------|----------|--------|
+| 影响预览 | ImpactSet | 静态分析，非动态模拟完整执行链 |
+| 传播控制 | 安全阀（深度/频率限制） | 全局配置，非按需临时调整 |
+| 隔离测试 | Branch | 需要创建、命名、管理，成本较高 |
+| 状态控制 | active/archived | 二元且偏永久性，缺少「暂停」语义 |
+
+**缺失能力与建议机制：**
+
+| 缺失能力 | 用户场景 | 建议机制 |
+|----------|----------|----------|
+| 临时规则覆盖 | 「这次更新跳过传播」 | Execution Context / Session Override |
+| 全局模式切换 | 「进入战争模式，切换整套规则」 | Runtime Profile / Context Mode |
+| 完整模拟执行 | 「如果我改了这个，完整后果是什么」 | Dry-run Engine（内存执行，不写入） |
+| 暂停状态 | 「临时冻结这个角色，但别归档」 | suspended/frozen 状态（或特殊 Tag） |
+| 轻量沙盒 | 「快速试一下，不想创建正式分支」 | Lightweight Sandbox（比 Branch 更轻） |
+
+**核心洞察：** 当用户的系统变得复杂后，他们会频繁需要低成本实验、调试、临时调整。如果每次都要创建 Branch 或修改 Policy 配置，用户会感到「操作成本太高」，进而减少实验，最终降低创造力。
+
+---
+
+### 维度三：产品体验（风险 #8-9）
+
+#### 风险 #8: 上手体验与学习曲线
+
+**风险评级：** 🔴 高风险，但可控
+
+**当前状态：**
+- ✅ 模板/配置包机制存在
+- ✅ Tag + Policy 分离允许默认配置
+- ✅ “系统不过时，模板可过时”的哲学为不同复杂度模板留了空间
+- ❌ 没有明确的“用户成长路径”设计
+- ❌ 没有“概念分层暴露”的 UI 策略
+- ❌ 没有定义“第一次使用体验”应该是什么样
+- ❌ 模板的定位是“配置便利”而非“上手体验核心”
+
+**核心原则：模板不是配置便利，而是用户入口**
+
+```
+当前定位：
+  系统（复杂） ← 模板（可选简化）
+
+建议定位：
+  模板（入口） → 系统（按需暴露）
+```
+
+**三层体验架构：**
+
+| 层级 | 用户看到的 | 底层机制 | 进入条件 |
+|------|------------|----------|----------|
+| **L1 内容层** | 角色、章节、设定（领域语言） | Context Unit + 预设配置 | 默认 |
+| **L2 协作层** | 关联、AI 建议、变更确认 | Edge + Agent + 确认机制 | 系统在合适时机引导 |
+| **L3 架构层** | Context Unit、边类型、Policy | 完整抽象 | 用户主动进入“高级设置” |
+
+**第一个“哇”时刻设计：**
+
+```具体场景：
+1. 用户选择「小说创作」模板
+2. 用户创建角色「林晓」，写了简单描述
+3. 用户开始写第一章，提到了林晓
+4. 系统高亮提示：「检测到你提到了林晓，已自动关联」
+5. 用户修改林晓的性格
+6. 系统提示：「林晓的性格变了，第一章有 2 处描写可能需要调整」
+7. 用户：哇！
+```
+
+**概念延迟暴露策略：**
+
+| 概念 | 何时暴露 | 如何暴露 |
+|------|----------|----------|
+| 边类型 | 用户困惑“为什么有些变化传播了有些没有” | 解释不同关系的不同行为 |
+| Policy | 用户想要“某些内容不需要确认” | 引导配置确认策略 |
+| Snapshot/Branch | 用户想要“回到之前的版本” | 引导使用版本管理 |
+| Agent 配置 | 用户想要“AI 的行为不对” | 引导调整 Agent 规则 |
+
+**UI 双轨设计：**
+
+| 操作 | 简单路径 | 高级路径 |
+|------|----------|----------|
+| 创建关联 | 在 A 的编辑界面点击“关联到 B” | 创建指定类型的 Edge |
+| 设置规则 | 选择预设的“AI 行为风格” | 编辑 Policy 配置 |
+| 版本管理 | 点击“保存存档点”/“回到之前” | 操作 Snapshot/Branch |
+
+**模板复杂度分级：**
+
+```yaml
+模板分级:
+  - 入门级:
+      名称: "小说创作·轻松版"
+      特点: 最少概念、最多自动化、适合新手
+      暴露: 只有内容层
+      
+  - 标准级:
+      名称: "小说创作·标准版"  
+      特点: 平衡的概念暴露、适合有经验用户
+      暴露: 内容层 + 协作层
+      
+  - 专业级:
+      名称: "小说创作·专业版"
+      特点: 完整功能、适合高级用户
+      暴露: 全部三层
+```
+
+#### 风险 #9: Agent 错误级联与批量恢复
+
+**风险等级：** 🟡 中等（有保护但操作成本高）
+
+**当前设计的保护：**
+- ✅ confirm_required 默认策略 — 错误在确认环节被拦截
+- ✅ Event Sourcing + Agent 推理溯源 — 完整记录了因果链信息
+- ✅ 安全阀机制 — 大规模传播会被拦截
+- ✅ Snapshot — 提供时间点回溯能力
+
+**核心缺口：**
+
+| 缺口 | 问题 | 影响 |
+|------|------|------|
+| 因果链视图 | 确认队列是扁平列表 | 用户难以快速识别错误源头 |
+| 因果链批量操作 | 只有时间点回滚，没有因果链回滚 | 回滚错误链时会误伤无关变更 |
+| 高语义影响检测 | 安全阀只看数量，不看语义 | 「主角死亡」这类语义重大变化可能不触发预警 |
+| 传播暂停选项 | 只有「接受并传播」或「拒绝」 | 缺少「接受但暂停，让我先审查」的精细控制 |
+
+**需要补充的设计：**
+
+**1. 确认中心升级为「因果链管理器」**
+```
+视图模式：
+├── 时间顺序（当前）
+├── 按 Context Unit 分组
+└── 按触发源聚合（因果链视图）
+    └── 源事件 → 一级影响 → 二级影响 → ...
+```
+
+**2. 基于因果链的批量操作**
+- 「拒绝此链」— 拒绝源于同一根事件的所有待确认变更
+- 「撤销此链」— 对已执行变更生成逆向事件，精确撤销
+- 「隔离此链」— 移入独立分支，主线不受影响
+
+**3. root_event_id 追踪**
+```yaml
+Event:
+  # 现有字段
+  trigger_event: 直接触发此事件的事件
+  
+  # 新增字段
+  root_event_id: 最初触发整条链的事件
+  propagation_depth: 当前是第几层传播
+```
+
+**4. 高语义影响的特殊处理**
+```yaml
+# 在 Policy 中定义
+high_impact_patterns:
+  - pattern: "角色.状态 → 死亡"
+    action: require_explicit_confirmation
+    pause_propagation: true
+    message: "检测到重大剧情变化"
+```
+
+**5. 确认选项扩展**
+```
+├── ✅ 接受（并传播）
+├── ❌ 拒绝
+└── ⏸️ 接受但暂停传播
+```
+
+**与核心架构的关系：** 这些补充不需要改动底层架构。Event Sourcing 已经记录了足够的因果信息，缺的是基于这些信息的查询、可视化和操作能力。这是「操作层」和「体验层」的补充。
+
+---
+
+### 维度四：协作机制（风险 #10）
+
+#### 风险 #10: 多人协作机制
+
+**前置约定：三种运行模式框架**
+
+```
+├── 自动化模式：无协作需求，Agent 自主运转
+└── 工作台模式
+    ├── 单人工作台：基础协作层（单用户权限）
+    └── 多人工作台：完整协作层
+```
+
+**Q1: 系统如何处理同时编辑冲突？**
+
+**设计：实时感知 + 字段级乐观并发 + 冲突时自动保护**
+
+```yaml
+协作编辑模型:
+  
+  第一层 - 实时感知:
+    # 让用户在冲突发生前就知道
+    机制: 用户开始编辑时广播「正在编辑 X」
+    展示: 其他用户看到 X 标记为「被 A 编辑中」
+    行为: 不阻止，仅提示「A 正在编辑此内容」
+    
+  第二层 - 提交时冲突检测:
+    # 基于 Event 的版本向量
+    检测: 提交时检查目标 Unit 的版本是否已变化
+    粒度: 字段级（不同字段可并行修改无冲突）
+    
+  第三层 - 冲突发生时的处理:
+    # 不丢失任何人的工作
+    步骤:
+      1. 后提交者的变更保存到「待合并暂存区」（轻量，非正式分支）
+      2. 通知双方用户
+      3. 提供合并界面：
+         - 并排展示：Base / 用户A / 用户B
+         - 操作选项：保留我的 / 接受他的 / 手动合并 / 创建正式分支
+      4. 合并结果作为新 Event 记录
+```
+
+**Q2: 确认队列是共享的还是各自的？**
+
+**设计：统一数据源 + 多视图展示**
+
+```yaml
+确认队列架构:
+  
+  数据层:
+    # 项目级统一队列
+    存储: 所有待确认变更存储在同一个队列
+    字段:
+      - target_unit: 被变更的 Unit
+      - assigned_to: 需要确认的用户（可多人）
+      - triggered_by: 触发此变更的用户/事件
+      - stakeholders: 相关方（需要通知但不需确认）
+    
+  展示层:
+    # 基于用户角色过滤展示
+    视图:
+      「需要我确认」:
+        过滤: assigned_to 包含当前用户
+        特点: 这是我的待办，必须处理
+        
+      「影响我的内容」:
+        过滤: target_unit 是我负责维护的，或我正在编辑的
+        特点: 需要关注，可能需要调整我的工作
+        
+      「团队动态」:
+        过滤: 无（显示所有）
+        特点: 了解全局，可选关注
+        
+  分配规则:
+    # 决定变更进入谁的「需要我确认」视图
+    优先级:
+      1. target_unit.authority_source（最高）
+      2. target_unit.maintainer
+      3. 项目默认审批人
+```
+
+**Q3: Agent 触发的变更建议归属于谁确认？**
+
+**设计：职责优先 + 触发者知情**
+
+```yaml
+Agent 变更确认归属:
+  
+  核心原则:
+    「谁负责目标 Unit，谁来确认针对它的变更」
+    「触发者有知情权，但不自动获得确认权」
+    
+  归属决策链:
+    1. target_unit 有明确 Authority Source → 该用户确认
+    2. target_unit 有 Maintainer → Maintainer 确认
+    3. 无明确配置 → 触发用户确认（如果有）
+    4. 系统/定时触发 → 项目管理员确认
+    
+  典型场景:
+    场景: 用户 A 修改角色，Agent 建议修改 B 负责的章节
+    
+    处理:
+      确认归属: B（章节的 Authority/Maintainer）
+      通知 A: 「你的修改触发了对第三章的建议，等待 B 确认」
+      通知 B: 「A 的修改影响了你的第三章，请确认建议的更新」
+```
+
+**Q4: 如果用户 A 的修改被用户 B 拒绝，通知机制是什么？**
+
+**设计：分层通知 + 闭环反馈**
+
+```yaml
+通知系统:
+  
+  通知分类:
+    必达通知（高优先级）:
+      - 你的变更被他人拒绝
+      - 有人请求你确认变更
+      - 检测到编辑冲突
+      - 你负责的内容被他人修改
+      
+    关注通知（可配置）:
+      - 你触发的变更被接受
+      - 你关注的 Unit 有更新
+      - 团队里程碑事件
+      
+  拒绝场景的完整流程:
+    
+    当 B 拒绝 A 触发的建议:
+      
+      通知给 A:
+        标题: 「你触发的变更建议被拒绝」
+        内容:
+          原始操作: 你对「角色林晓」的修改（链接）
+          触发的建议: Agent 建议更新「第三章」
+          拒绝者: 用户 B
+          拒绝理由: [B 填写的理由，如有]
+        后续选项:
+          - 查看详情
+          - 向 B 发起讨论
+          - 查看林晓当前状态
+          - 查看第三章当前状态
+          
+      Event 记录:
+        # 完整溯源
+        action: change_rejected
+        actor: B
+        target: 第三章
+        root_trigger: A 对林晓的修改
+        reason: [B 的拒绝理由]
+        
+  通知渠道:
+    默认: 应用内通知中心
+    可配置: 邮件通知（重要事件）
+    企业版: Webhook 集成（推送到 Slack/飞书等）
+```
+
+**权限模型：**
+- owner: 完全控制权
+- maintainer: 日常维护权
+- contributor: 可提交变更，需审批
+- viewer: 只读
+
+**协作层与运行模式的关系：**
+
+```yaml
+运行模式与协作层:
+  
+  自动化模式:
+    协作层: 最小化
+    特点: 无实时编辑冲突、无人工确认队列
+    需要: 结果输出的订阅通知
+    
+  单人工作台:
+    协作层: 基础
+    特点: 无冲突处理、简化确认队列
+    需要: 单用户权限模型
+    
+  多人工作台:
+    协作层: 完整
+    特点: 冲突处理、分层确认、跨用户通知、角色权限
+    需要: 本设计的全部内容
+    
+  实现策略:
+    # 底层数据模型从一开始就支持多用户
+    Event.actor_user_id: 必须字段
+    ContextUnit.authority_source: 必须字段
+    ContextUnit.maintainer: 必须字段
+    
+    # 协作层作为可选模块加载
+    单人模式: 简化 UI，不加载冲突处理等
+    多人模式: 加载完整协作层
+```
+
+**核心原则：**
+> 底层数据模型从第一天就支持多用户，协作 UI 可渐进增强。
+> 不丢失任何人的工作，冲突时保护而非覆盖。
+> 谁负责谁确认，触发者有知情权无越权。
+
+---
+
+### 项目框架补充：三种运行模式
+
+用户补充了项目的整体运行模式框架：
+
+```
+项目运行模式:
+
+├── 自动化模式
+│   特点: 无人工干涉，全程自动化运行
+│   场景: AI Agent 有机体持续运转，源源不断提供服务
+│   类比: 更像一个「活着的有机体」
+│
+└── 工作台模式
+    特点: 中间环节有人工介入，人机协作产出成果
+    
+    ├── 单人工作台
+    │   场景: 个人创作者、独立开发者
+    │   协作层: 基础（单用户权限）
+    │
+    └── 多人工作台
+        场景: 团队协作、多部门共同维护
+        协作层: 完整（冲突处理、权限管理、通知机制）
+```
+
+---
+
+### 待设计领域
+
+**待设计 #1: 开放生态 / 外部连接能力**
+
+用户明确表示一定是「开放生态」，支持：
+- 用户可以把 Context Unit 连接到外部数据源（API、数据库、文件）
+- 用户可以让外部工具订阅系统事件
+- 用户可以导出/导入部分系统状态到其他工具
+
+**状态：** 明确意图，待具体设计（如 Webhook、API schema、数据格式等）
 
