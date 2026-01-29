@@ -1,4 +1,4 @@
-# Technical Research Step 4: Implementation Research
+# Technical Research Step 5: Implementation Research
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -17,7 +17,7 @@
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] complete option after implementation research content generation
 - 💾 ONLY save when user chooses C (Complete)
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before completing workflow
+- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5]` before completing step
 - 🚫 FORBIDDEN to complete workflow until C is selected
 
 ## CONTEXT BOUNDARIES:
@@ -25,7 +25,7 @@
 - Current document and frontmatter from previous steps are available
 - Focus on implementation approaches and technology adoption strategies
 - Web search capabilities with source verification are enabled
-- This is the final step in the technical research workflow
+- This step focuses on implementation approaches and technology adoption
 
 ## YOUR TASK:
 

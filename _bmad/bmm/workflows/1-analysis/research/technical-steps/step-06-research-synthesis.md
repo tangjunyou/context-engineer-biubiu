@@ -1,4 +1,4 @@
-# Technical Research Step 5: Technical Synthesis and Completion
+# Technical Research Step 6: Technical Synthesis and Completion
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -18,7 +18,7 @@
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] complete option after synthesis content generation
 - 💾 ONLY save when user chooses C (Complete)
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5]` before completing workflow
+- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6]` before completing workflow
 - 🚫 FORBIDDEN to complete workflow until C is selected
 - 📚 GENERATE COMPLETE DOCUMENT STRUCTURE with intro, TOC, and summary
 
@@ -82,8 +82,9 @@ Search the web: "{{research_topic}} technical significance importance"
 **Technical Section-by-Section Integration:**
 
 - Combine technical overview from step-02
-- Integrate architectural patterns from step-03
-- Incorporate implementation research from step-04
+- Integrate integration patterns from step-03
+- Incorporate architectural patterns from step-04
+- Incorporate implementation research from step-05
 - Add cross-technical insights and connections
 - Ensure comprehensive technical coverage with no gaps
 
@@ -157,7 +158,7 @@ _Source: [URL]_
 
 ### Current Technical Architecture Patterns
 
-[Comprehensive architectural analysis synthesized from step-03 with current context]
+[Comprehensive architectural analysis synthesized from step-04 with current context]
 _Dominant Patterns: [Current architectural approaches]_
 _Architectural Evolution: [Historical and current evolution patterns]_
 _Architectural Trade-offs: [Key architectural decisions and implications]_
@@ -175,7 +176,7 @@ _Source: [URL]_
 
 ### Current Implementation Methodologies
 
-[Implementation analysis from step-04 with current context]
+[Implementation analysis from step-05 with current context]
 _Development Approaches: [Current development methodologies and approaches]_
 _Code Organization Patterns: [Structural patterns and organization strategies]_
 _Quality Assurance Practices: [Testing, validation, and quality approaches]_
@@ -467,7 +468,7 @@ This step ensures the final technical research document:
 
 When 'C' is selected:
 
-- All technical research steps completed (1-5)
+- All technical research steps completed (1-6)
 - Comprehensive technical research document generated
 - Professional technical document structure with intro, TOC, and summary
 - All technical sections appended with source citations
