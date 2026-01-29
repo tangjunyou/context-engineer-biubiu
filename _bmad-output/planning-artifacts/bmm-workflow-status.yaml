@@ -23,7 +23,7 @@ workflow_status:
   product-brief: "_bmad-output/planning-artifacts/product-brief-AI 上下文工程可视化项目-2026-01-29.md"  # completed: 2026-01-29
 
   # Phase 2: Planning
-  prd: required
+  prd: "_bmad-output/planning-artifacts/prd.md"
   create-ux-design: conditional  # if_has_ui
 
   # Phase 3: Solutioning
