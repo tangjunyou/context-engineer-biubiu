@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-01b-continue', 'step-02-discovery', 'step-03-success', 'step-04-journeys']
+stepsCompleted: ['step-01-init', 'step-01b-continue', 'step-02-discovery', 'step-03-success', 'step-04-journeys', 'step-05-domain']
 inputDocuments:
   - '_bmad-output/planning-artifacts/product-brief-AI 上下文工程可视化项目-2026-01-29.md'
   - '_bmad-output/analysis/brainstorming-session-2026-01-22.md'
@@ -325,7 +325,7 @@ classification:
 > - *「主角武器」属性恢复为"冰"*
 > - *取消3处描写更新*
 > - *取消伏笔更新*
-> 
+>
 > *注意：你今天新写的章节内容将保留，仅撤销武器相关改动。确认？*
 
 林远点击确认。**5秒钟，一切恢复。**
@@ -459,11 +459,11 @@ AI的回复明显更加温柔："被骂的感觉确实很糟糕。愿意说说�
 两人几乎同时点击保存。系统弹出冲突提示：
 
 > *检测到编辑冲突*
-> 
+>
 > *「人妖战争·起因」被两人同时修改：*
 > - *策划A: "人族皇帝的贪婪"*
 > - *策划B: "妖族领地被侵占"*
-> 
+>
 > *请选择：[A版本] [B版本] [合并编辑] [提交给陈刚决定]*
 
 两人在群里喊："你也在改这个？"
@@ -604,3 +604,382 @@ AI的回复明显更加温柔："被骂的感觉确实很糟糕。愿意说说�
 | 冲突解决≤5分钟       | 世界观组冲突场景展示                                             |
 | 错误后继续使用率≥90% | 林远错误恢复旅程展示                                             |
 | 问题平均诊断时间≤15分钟 | 林远自助排查旅程展示（从发现异常到解决）                           |
+
+---
+
+## Domain-Specific Requirements
+
+### Compliance & Regulatory
+
+#### 数据隐私策略
+
+基于项目哲学"高度用户自定义"和"人类最终决策权"，我们采用**本地优先架构**：
+
+| 模式 | 部署方式 | 数据存储 | 适用场景 |
+|------|----------|----------|----------|
+| **本地模式** | 单机运行 | 本地 SQLite/文件系统 | MAV 默认；个人创作者 |
+| **P2P 协作** | 点对点同步 | 本地 + 加密同步 | V1.5+；小团队协作 |
+| **企业自托管** | Docker/K8s 部署 | 企业自有服务器 | 企业版；数据合规要求 |
+| **官方云服务** | SaaS | 平台托管（加密） | V2.0+；轻量用户 |
+
+#### 内容审核策略
+
+| 策略 | 说明 | 适用场景 |
+|------|------|----------|
+| **零审核** | 系统不介入内容审查 | 本地优先产品；默认策略 |
+| **可选自检** | 官方模板可配置自检 Agent | 用户自愿使用 |
+| **企业合规** | 企业部署时可对接外部审核 | 企业版插件 |
+
+#### 知识产权
+
+| 问题 | 策略 |
+|------|------|
+| 用户创作内容归属 | 完全归用户所有，平台不主张任何权利 |
+| 模板分享协议 | 默认 MIT 协议，用户可自定义 |
+| 基于模板创作的衍生作品 | 归创作者所有，遵循模板协议要求 |
+| 官方模板知识产权 | 开源可自由使用，鼓励社区改进 |
+
+### Technical Constraints
+
+#### 本地优先架构约束
+
+```yaml
+核心约束:
+  - 数据首先存储本地，云端同步为可选
+  - 用户完全拥有数据，可随时导出完整项目
+  - 离线状态下核心功能可用（除协作功能）
+  - 云端同步必须端到端加密
+```
+
+#### 反馈回路安全约束
+
+> 详细约束规则见 Risk Mitigations → 设计时验证机制 → 反馈回路显式声明
+
+核心原则：所有反馈回路必须显式声明安全参数（max_iterations、timeout_ms 等）
+
+#### 四种确认模式完整配置
+
+```yaml
+确认策略配置:
+  # 按 Tag 配置（默认策略）
+  tag_policies:
+    - tag: "#核心设定"
+      confirmation: strict          # 严格模式：每个变更都需确认
+      # 特点：最严格的确认级别，适用于关键业务数据
+
+    - tag: "#重要变量"
+      confirmation: confirm_required # 需确认模式
+      # 行为：等同 strict，每个变更都需确认
+      # 语义用途：用于明确标识"此变量必须由特定角色确认"
+      # 示例：涉及多部门协作的 Unit，必须经部门负责人确认
+      # 与 strict 的区别：confirm_required 强调"必须由特定 Authority Source 确认"
+      # 而 strict 仅表示"需要确认"，不指定确认人
+
+    - tag: "#常规内容"
+      confirmation: batch_queue     # 批量模式：可批量接受建议
+      # 适用：日常维护、低风险的批量操作
+
+    - tag: "#草稿"
+      confirmation: yolo           # YOLO 模式：自动接受，无需确认
+      # 适用：快速迭代、实验性内容，用户明确选择信任 AI
+
+  # 按 Unit 配置（覆盖 Tag 配置）
+  unit_override: true
+
+  # 混合维护者时的策略
+  multi_maintainer_policy:
+    primary: Agent-A      # 一级维护者：提出变更建议
+    secondary: Agent-B    # 二级维护者：审查一级建议
+    final_authority: user  # 最终决策权：人工确认
+    flow: primary → secondary → final_authority
+```
+
+#### 多模型/多后端配置约束
+
+支持按变量/卡片粒度配置不同模型和 API 后端，实现"质量/成本/速度"的自主控制。
+
+**核心设计原则**
+
+| 原则 | 说明 |
+|------|------|
+| 统一接口 | 所有 Provider 遵循 OpenAI-compatible API 标准 |
+| 分层解耦 | ModelManager → Provider → Model 三层架构 |
+| 水平扩展 | 通过配置文件即可添加新 Provider，无需修改核心代码 |
+| 凭证隔离 | 支持 Provider 级和 Model 级两套凭证配置 |
+
+**优先支持的 Coding 套餐（MAV 阶段）**
+
+| 提供商 | 套餐类型 | Base URL | 特点 |
+|--------|----------|----------|------|
+| 智谱AI | GLM Coding Plan | `https://open.bigmodel.cn/api/paas/v4` | 性价比高，Claude Pro 套餐的1/3价格 |
+| 月之暗面 | Kimi Coding | `https://api.moonshot.cn/v1` | 长上下文（200K） |
+| MiniMax | MiniMax Coding | `https://api.minimax.chat/v1` | 中文优化 |
+
+**Provider 配置格式**
+
+```yaml
+providers:
+  zhipu:  # 智谱 Coding 套餐（优先支持）
+    name: "智谱AI"
+    base_url: "https://open.bigmodel.cn/api/paas/v4"
+    api_key: "${ZHIPU_API_KEY}"
+    default_model: "glm-4.5-coding"
+    timeout: 30000
+    max_retries: 3
+    models:
+      - id: "glm-4.7-coding"
+        context_window: 128000
+        cost_per_1k_input: 0.002
+
+  kimi:  # Kimi Coding 套餐（优先支持）
+    name: "月之暗面"
+    base_url: "https://api.moonshot.cn/v1"
+    api_key: "${KIMI_API_KEY}"
+
+  local:  # 本地模型（隐私优先场景）
+    name: "本地模型"
+    base_url: "http://localhost:11434/v1"
+```
+
+**按 Unit 配置模型策略**
+
+```yaml
+unit_model_config:
+  - unit_tag: "#核心设定"
+    provider: "zhipu"
+    model: "glm-4.7-coding"
+    temperature: 0.3
+
+  - unit_tag: "#常规内容"
+    provider: "zhipu"
+    model: "glm-4.5-coding"
+
+  - unit_tag: "#草稿"
+    provider: "local"
+    model: "qwen2.5-coder:7b"
+```
+
+**成本控制机制**
+
+| 机制 | 说明 |
+|------|------|
+| Token 预算 | 按 Unit/Tag 设置月度 Token 上限 |
+| 成本告警 | 达到预算 80% 时警告，100% 时自动降级 |
+| 智能降级 | 主模型不可用/超预算时，自动切换到备用 Provider |
+| 成本追踪 | 每个 Unit 的模型调用成本独立统计 |
+
+**智能降级链配置**
+
+```yaml
+fallback_chain:
+  - provider: zhipu
+    model: glm-4.7-coding
+  - provider: zhipu
+    model: glm-4.5-coding
+  - provider: local
+    model: qwen2.5-coder
+```
+
+**参考实现**
+
+借鉴以下开源项目的设计：
+- **Cherry Studio** (CherryHQ/cherry-studio): Provider Registry、智能路由
+- **Dify** (langgenius/dify): Model Runtime 三层架构、凭证管理
+
+### Integration Requirements
+
+#### 存储适配层接口
+
+从第一天预留统一的存储适配接口：
+
+```yaml
+StorageAdapter:
+  type: local_sqlite | p2p_crdt | self_hosted | cloud
+  # 统一接口，支持不同阶段切换，无需重构代码
+
+SyncAdapter:
+  - offline:          # 单机模式（MAV 默认）
+  - p2p:              # 点对点同步（V1.5+）
+  - relay:            # 中继同步（V1.5+，用于 NAT 穿透）
+  - centralized:      # 中心化同步（V2.0+ 官方云）
+```
+
+#### 协作技术选型
+
+**选型决策：方案 C（三者都支持）**
+
+| 阶段 | 技术方案 | 实现方式 | 适用场景 |
+|------|----------|----------|----------|
+| MAV | 本地 SQLite | 单机运行，可选加密云同步（iCloud/Google Drive） | 个人创作者 |
+| V1.5 | P2P + CRDT | 点对点同步，端到端加密，无需中心服务器 | 小团队协作 |
+| V2.0 | 官方云服务 | SaaS + 企业自托管选项 | 轻量用户/企业 |
+
+#### 导出与分享机制
+
+**三种导出/分享模式**：
+
+| 模式 | 内容 | 用途 |
+|------|------|------|
+| **模板分享** | Unit类型定义、Agent规则、Policy配置 | 分享配置框架供他人使用 |
+| **项目克隆** | 所有Unit + 完整历史 + 配置 | 团队新成员、完整备份 |
+| **有机体导出** | 特定Snapshot + 运行配置 | 部署为自动化服务 |
+
+**有机体配置包格式（概念版）**：
+
+```yaml
+organism_package:
+  version: "1.0.0"
+  schema_version: "2.0"
+
+  metadata:
+    name: "模板名称"
+    author: "作者"
+    description: "描述"
+    license: "MIT"  # 可自定义
+
+  config:
+    unit_types: [...]      # Unit 类型定义
+    edge_types: [...]      # 边类型配置
+    agents: [...]          # Agent 规则
+    template_units: [...]  # 预设 Unit
+
+  sharing:
+    allow_fork: true           # 允许基于此创建新模板
+    allow_modification: true   # 允许修改后重新分享
+    attribution_required: true # 需要保留原作者署名
+```
+
+**设计原则：灵活字段**
+
+有机体配置包采用"开放字段"设计，避免定死字段限制后续扩展：
+
+| 特性 | 说明 |
+|------|------|
+| 扩展字段 | config 下允许任意自定义字段，遵循命名空间规则（如 `x_custom_field`） |
+| 版本兼容 | 新版本读取旧格式时，未知字段保留但不处理；旧版本读取新格式时，忽略未知字段 |
+| 模板继承 | 支持基于现有模板创建新模板，可覆盖或扩展任意字段 |
+| 字段校验 | 仅校验核心必填字段（version, schema_version, metadata），其余字段由模板自行定义规则 |
+
+### Risk Mitigations
+
+#### 设计时验证机制
+
+通过神经网络设计约束预防运行时冲突：
+
+**1. 单一 Maintainer 原则**
+
+核心规则：每个 Unit 同一时间只有一个 Maintainer（人、Agent 或混合）
+
+| 原则 | 说明 | 实现方式 |
+|------|------|----------|
+| 目的 | 从根本上避免传统"同时编辑"冲突 | 设计时责任分配，而非运行时锁 |
+| 单一性 | 一个 Unit 不可被多个 Maintainer 并行维护 | 静态检查强制约束 |
+| 变更 | 更换 Maintainer 需显式交接流程 | 记录交接事件，确保可追溯 |
+| 例外 | 二次审查机制中多级 Maintainer | 串行执行，非并行（见 Authority Source vs Maintainer） |
+
+**2. 传播方向确定性**
+```
+错误设计：                    正确设计：
+角色A ──→ 势力 ←── 角色B     角色A ──┐
+   ↑                    ↑           ├─→ 【聚合节点】──→ 势力
+   └──── 同时修改 ──────┘      角色B ──┘
+规则：多对一关系必须通过"聚合节点"
+```
+
+**3. 层级传播约束**
+```
+角色卡 ──→ 势力卡 ──→ 章节卡 ──→ 世界大纲
+   │          │          │
+   └──── 层级递增，不可随意跨级 ────┘
+```
+
+**4. 循环引用检测与保护**
+
+虽然现实创作中一般不存在合理的循环依赖，但系统必须提供检测和保护机制：
+
+| 场景 | 检测时机 | 处理策略 |
+|------|----------|----------|
+| 设计时静态检查 | 构建依赖图时 | 检测到循环 → 预警并给出重构建议 |
+| 运行时保护 | 传播执行时 | 遇到未检测到的循环 → 自动暂停 + 标记待处理 |
+
+重构建议示例：
+```
+检测到循环依赖：角色A → 角色B → 势力关系 → 角色A
+建议：将"势力关系"拆分为独立 Unit，角色A/B 均引用该 Unit
+```
+
+**5. Maintainer 负载均衡检查**
+
+| 检查项 | 阈值 | 处理策略 |
+|--------|------|----------|
+| 单一 Maintainer 负责的 Unit 数 | 默认 ≤50 | 超过时警告，建议拆分或增加 Maintainer |
+| 单一 Unit 的 Maintainer 数量 | 必须 =1 | 多人/多 Agent 同时维护同一 Unit 时强制修复 |
+| Maintainer 响应时间 | 可配置 | 超过阈值时自动触发备用 Maintainer 或转入待处理队列 |
+
+**6. 反馈回路显式声明**
+
+借鉴人体神经系统的反馈机制，所有反馈回路必须显式声明安全参数：
+
+```yaml
+反馈回路配置:
+  type: negative_feedback | positive_feedback
+  max_iterations: 10              # 【必须】最大迭代次数，防止无限循环
+  timeout_ms: 5000                # 【必须】单次反馈超时，防止阻塞
+
+  # 根据类型配置：
+  convergence_threshold: 0.01     # 【负反馈必须】收敛阈值
+  divergence_limit: 100           # 【正反馈可选】发散上限，防止级联过度
+
+限制说明:
+  - MAV 阶段：仅支持负反馈（如一致性自动修正）
+  - V1.5+：支持正反馈（如剧情连锁反应）
+  - 必须配置项不可省略，系统拒绝执行未配置安全参数的反馈回路
+  - 达到 max_iterations 未收敛：强制终止，标记为"需人工检查"
+  - 达到 timeout_ms：中断当前迭代，记录状态，等待下一次触发
+```
+
+**7. 设计时静态检查分级**
+
+| 冲突类型 | 检测时机 | 处理策略 |
+|----------|----------|----------|
+| **高危（数据一致性风险）** | 设计时 | **强制修复**后才能运行 |
+| **中危（性能瓶颈）** | 设计时 | **警告提示**，建议优化 |
+| **低危（建议优化）** | 设计时/运行时 | **提示**，不阻断 |
+| **运行时异常** | 传播过程中 | **自动暂停** + 进入确认队列 |
+
+#### 运行时降级策略
+
+| 场景 | 策略 |
+|------|------|
+| 检测到潜在冲突 | 自动暂停传播，进入确认队列等待人工裁决 |
+| 反馈回路未收敛 | 达到 max_iterations 后强制终止，标记为"需人工检查" |
+| 网络同步失败 | 本地继续运行，标记为"离线模式"，恢复后自动同步 |
+
+#### 责任边界
+
+| 场景 | 责任归属 | 系统行为 |
+|------|----------|----------|
+| 用户采纳 AI 建议后出现问题 | **用户承担责任** | 确认界面明确提示"你即将接受此变更" |
+| AI 未经确认自动修改（YOLO模式） | **用户承担责任** | 模式切换需二次确认 |
+| 模板 Agent 给出不合理建议 | **模板设计者责任** | 提供模板版本更新 + 用户可覆盖配置 |
+| 传播机制错误 | **平台责任** | 紧急修复 + 数据恢复 |
+
+#### Authority Source vs Maintainer 机制
+
+```yaml
+权限分离设计:
+  Authority Source:
+    - 定义：冲突时的最终决策人
+    - 角色：人类/外部文档/系统/Agent
+    - 权力：否决变更、强制落盘特定版本
+
+  Maintainer:
+    - 定义：负责提出变更建议
+    - 角色：Agent/人类/规则
+    - 权力：生成 ChangeSet、提交建议、无权强制落盘
+
+  二次审查机制:
+    - 适用：高价值/高风险 Unit
+    - 流程：一级 Maintainer 提交 → 二级 Maintainer 审查 → Authority Source 确认
+    - 特点：串行执行，前一级完成后才进入下一级
+```
