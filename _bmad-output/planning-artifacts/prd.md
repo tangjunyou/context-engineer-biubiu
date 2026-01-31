@@ -630,6 +630,37 @@ AI的回复明显更加温柔："被骂的感觉确实很糟糕。愿意说说�
 | **可选自检** | 官方模板可配置自检 Agent | 用户自愿使用 |
 | **企业合规** | 企业部署时可对接外部审核 | 企业版插件 |
 
+#### 分阶段审核策略细化（需要进一步讨论确认）
+
+借鉴 Dify 的 Moderation 模型实践和隐私优先原则，建议分阶段实施：
+
+| 阶段 | 审核策略 | 说明 |
+|------|----------|------|
+| **MAV（本地优先）** | 完全零审核 | 用户完全拥有数据，平台无责任 |
+| **V1.5（P2P 协作）** | 零审核 + 可选自检 Agent | 用户可在本地配置自检规则 |
+| **V2.0（云服务）** | 零审核（私有项目）+ 社区准则（模板分享） | 仅对公开分享的模板进行轻量检查 |
+
+**风险分析：**
+- 在提供云服务前，由于数据完全本地存储，平台内容风险可控
+- 模板分享阶段引入社区准则确认机制，非强制审核但保留移除权利
+
+```yaml
+content_policy:
+  # 本地创作：完全无限制
+  private_workspace: no_moderation
+
+  # 模板分享：社区准则确认
+  template_sharing:
+    require_guidelines_acceptance: true
+    guidelines_version: "1.0"
+    community_standards: "https://platform.com/guidelines"
+
+  # 企业版：可对接外部审核
+  enterprise:
+    external_moderation_api: optional
+    audit_log_retention: "7years"
+```
+
 #### 知识产权
 
 | 问题 | 策略 |
@@ -650,6 +681,90 @@ AI的回复明显更加温柔："被骂的感觉确实很糟糕。愿意说说�
   - 离线状态下核心功能可用（除协作功能）
   - 云端同步必须端到端加密
 ```
+
+#### 存储架构演进方案（需要进一步讨论确认）
+
+基于对 Graphiti（时序知识图谱框架）和 Memvid（Rust 单文件内存系统）的调研，建议采用分层存储架构：
+
+```
+┌─────────────────────────────────────────┐
+│  应用层：Context Unit / Edge / Policy    │
+├─────────────────────────────────────────┤
+│  溯源层：Event Sourcing（参考 Memvid）   │
+│  - Embedded WAL                         │
+│  - Smart Frame（不可变事件单元）          │
+│  - Replay Engine（时间旅行）             │
+├─────────────────────────────────────────┤
+│  图谱层：图数据库（参考 Graphiti）        │
+│  - MAV：Kuzu（嵌入式，Rust 绑定友好）     │
+│  - V1.5+：Neo4j/FalkorDB（服务端）       │
+├────────────────────────���────────────────┤
+│  存储层：                                │
+│  - 本地：单文件 MV2 格式（参考 Memvid）   │
+│  - 同步：P2P CRDT / 云同步               │
+└─────────────────────────────────────────┘
+```
+
+**关键调研发现：**
+
+| 项目 | 核心技术 | 对本项目的启示 |
+|------|----------|----------------|
+| **Graphiti** | 双时序数据模型、增量更新、混合检索 | 图数据库（Kuzu/Neo4j）比 SQLite 更适合存储复杂关系网络 |
+| **Memvid** | 嵌入式 WAL、Smart Frame、时间旅行调试 | Rust 实现的单文件存储 + 溯源重放，与团队技术栈高度契合 |
+| **Dify** | Provider 三层架构、凭证隔离 | 模型配置与 Agent 绑定是核心设计 |
+
+**技术性能对比：SQLite vs Kuzu（溯源系统场景）**
+
+| 维度 | SQLite | Kuzu | 影响评估 |
+|------|--------|------|----------|
+| 写入吞吐 | ~50K events/sec | ~30K events/sec | SQLite 略优，但差距可接受 |
+| 图遍历查询 | JOIN 实现，O(n) 复杂度 | 原生图遍历，O(log n) | Kuzu 显著优于复杂关系查询 |
+| 存储膨胀 | 无压缩，约 1MB/1K events | 列式压缩，约 200KB/1K events | Kuzu 节省 80% 空间 |
+| 时序查询 | 需自建索引 | 内置时序支持 | Kuzu 减少开发工作量 |
+| Rust 集成 | 通过 rusqlite | 通过 FFI | 两者均可，Kuzu C++ 核心性能更优 |
+
+**关键性能指标参考**
+
+| 项目 | 指标 | 来源 |
+|------|------|------|
+| Graphiti 检索延迟 | sub-200ms (at scale) | Zep 生产环境 |
+| Memvid 本地访问 | sub-5ms | Memvid 文档 |
+| SQLite 单文件上限 | ~280TB (理论) | SQLite 官方 |
+
+**Memvid WAL 结构参考（溯源系统实现参考）**
+
+Memvid 的嵌入式 WAL 设计可作为 Event Sourcing 溯源层实现参考：
+
+```
+WAL Record Header (48 bytes):
+  - sequence: u64 (8 bytes)      // 单调递增序列号
+  - length: u32 (4 bytes)        // payload 长度
+  - reserved: 4 bytes            // 对齐预留
+  - checksum: [u8; 32]           // Blake3 哈希校验
+
+Payload: 变长字节数组（实际 Event 数据）
+```
+
+关键机制：
+- **原子写入**：header + payload 合并写入，防止半写损坏
+- **fsync 强制刷盘**：每次写入后强制同步，保证崩溃安全
+- **循环缓冲区**：WAL 区域满时触发 checkpoint，压缩到 Data Segments
+- **崩溃恢复**：启动时扫描 WAL，回放未 checkpoint 的记录
+
+**参考实现**：Memvid 使用 Rust 实现，与团队技术栈匹配。
+
+**技术债务风险评估（需要进一步讨论确认）**
+
+| 方案 | 短期成本 | 长期风险 | 建议 |
+|------|----------|----------|------|
+| MAV 用 SQLite，后期迁移 Kuzu | 低 | 高：关系模型转图模型，迁移复杂 | 不推荐 |
+| MAV 直接用 Kuzu（嵌入式） | 中：团队学习曲线 | 低：架构一致，无需迁移 | 推荐 |
+| 自研 Memvid 模式存储 | 高：3-6 月开发周期 | 中：完全可控，但维护负担重 | 可选（团队 Rust 能力强） |
+
+**技术债务预防建议：**
+- MAV 阶段直接使用 Kuzu（嵌入式图数据库）替代 SQLite，避免后期迁移成本
+- 溯源系统采用 Memvid 的 Smart Frame + Embedded WAL 模式
+- 团队具备 Rust+TypeScript 能力，可深度定制存储核心
 
 #### 反馈回路安全约束
 
@@ -785,6 +900,37 @@ fallback_chain:
 借鉴以下开源项目的设计：
 - **Cherry Studio** (CherryHQ/cherry-studio): Provider Registry、智能路由
 - **Dify** (langgenius/dify): Model Runtime 三层架构、凭证管理
+
+#### 模型配置降级提醒机制（需要进一步讨论确认）
+
+基于调研，每个 Unit 的模型配置应与 Agent 绑定，并包含降级提醒：
+
+```yaml
+unit_model_config:
+  - unit_tag: "#核心设定"
+    # 绑定到特定的记忆/处理 Agent
+    agent_binding: "consistency-checker"
+    provider: "zhipu"
+    model: "glm-4.7-coding"
+    temperature: 0.3
+    # 降级策略（降级时提醒用户）
+    fallback:
+      - provider: "zhipu"
+        model: "glm-4.5-coding"
+        notify_user: true  # 降级时提醒
+      - provider: "local"
+        model: "qwen2.5-coder:7b"
+        notify_user: true
+        quality_warning: "本地模型质量可能下降，建议复查输出"
+
+  - unit_tag: "#神经网络边"  # 核心概念：边的推理 Agent
+    agent_binding: "edge-propagator"
+    provider: "kimi"
+    model: "kimi-coding"
+    context_window: 200000  # 边传播可能需要长上下文
+```
+
+**设计原则**：Unit 配置与 Agent 绑定是核心设计，而非附加功能。
 
 ### Integration Requirements
 
