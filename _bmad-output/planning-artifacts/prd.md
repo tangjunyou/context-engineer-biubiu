@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-01b-continue', 'step-02-discovery', 'step-03-success', 'step-04-journeys', 'step-05-domain']
+stepsCompleted: ['step-01-init', 'step-01b-continue', 'step-02-discovery', 'step-03-success', 'step-04-journeys', 'step-05-domain', 'step-e-01-discovery', 'step-e-02-review', 'step-e-03-edit']
 inputDocuments:
   - '_bmad-output/planning-artifacts/product-brief-AI 上下文工程可视化项目-2026-01-29.md'
   - '_bmad-output/analysis/brainstorming-session-2026-01-22.md'
@@ -9,8 +9,9 @@ documentCounts:
   briefs: 1
   research: 0
   brainstorming: 1
-  projectDocs: 1
+  projectDocs: 2
 workflowType: 'prd'
+workflow: 'edit'
 classification:
   projectType: 'Platform + Developer Tool + Creative Tool'
   domain: 'AI Infrastructure + Creative Tools'
@@ -18,6 +19,10 @@ classification:
   projectContext: 'greenfield'
   innovationPositioning: 'New Paradigm: AI Organism'
   technicalCharacteristics: 'State-Intensive System'
+lastEdited: '2026-01-31'
+editHistory:
+  - date: '2026-01-31'
+    changes: '添加Product Overview章节；完善Success Criteria（用户成功定义、失败阈值）；Journey版本边界标注；添加系统底线章节；更新技术债务检查清单'
 ---
 
 # Product Requirements Document - AI 上下文工程可视化项目
@@ -25,12 +30,79 @@ classification:
 **Author:** 耶稣
 **Date:** 2026-01-29
 
+## Product Overview
+
+### 项目背景与动机
+
+**原始动机**（来自总体想法.md）：
+> 最初从"AI 写中文网络长篇高质量爆款小说"出发，认为当前的核心阻塞主要是：
+> 1. 稳定产出质量（输出质量波动大）
+> 2. 长篇一致性问题（人物、设定、时间线、状态持续一致非常难）
+> 3. 创意设计问题（设定/剧情结构/伏笔回收等需要系统化支撑）
+
+**核心洞察**：
+AI 本质无状态。是精密的上下文工程设计让 AI 有了状态——让 AI Agent 真正"活"了起来。
+
+### 产品定义
+
+**AI 上下文工程可视化项目**是一个 **AI 有机体构建平台**——不是编排 AI 的"动作"，而是让用户设计 AI 的"存在"。
+
+我们构建的是：
+- 一个通用的 AI 上下文工程平台（高度模块化底层）
+- 一套小说创作官方模板（验证场景）
+
+遵循"一花一世界"的设计哲学——以具体场景为锚，以通用机制为本。
+
+### 核心价值主张
+
+> "让 AI 真正'活'起来" —— 通过上下文工程设计赋予 AI 状态，让用户清晰感知 AI 记住了他们的设定。
+
+**关键差异化**（来自 Product Brief）：
+
+| 维度 | 本项目 | 现有方案（Dify/LangChain） |
+|------|--------|---------------------------|
+| 核心范式 | 设计 AI 的"存在"（有机体） | 编排 AI 的"动作"（工作流） |
+| 状态管理 | 系统化上下文工程，赋予 AI 真正的状态 | prompt + workflow，本质无状态 |
+| 人机协同 | 围绕项目状态（变量）共同管理 | 人发指令，AI 执行 |
+| 可视化 | 有机系统蓝图，可感知"活着的系统" | 工作流图/节点图 |
+
+### 目标用户
+
+**L1 有机体设计师**（直接使用平台）
+- 独立创作者（如林远）：设计角色卡、世界观卡、章节结构
+- 技术开发者（如张涛）：设计复杂AI有机体（如情感陪伴AI）
+
+**L2 有机体运营者**（直接使用平台）
+- 与AI协同管理有机体的日常运转
+- 企业团队（如游戏世界观组）：多人协作维护
+
+**L3 有机体消费者**（不直接使用平台）
+- 使用AI有机体服务输出的终端用户
+
+### 成功画面
+
+当用户使用这个平台时，他们能感知到：
+
+> **一个"活着的系统"**——每个变量（器官）之间的关联清晰可见，变更沿着"神经系统"自动传播，AI Agent 像系统内部的员工一样持续感知和响应。整个有机体在呼吸、在运转。
+
+---
+
 ## Success Criteria
 
 > **核心成功验证问题：** 用户是否真的感知到"AI有状态"带来的价值差异？
 >
 > 本项目的成功不是功能堆砌或用户数增长，而是验证一个根本命题：**通过上下文工程赋予AI状态，能让AI真正"活"起来，并被用户清晰感知。**
 > 本项目的技术选型参考文档为"拓展信息/项目技术方案第二版（GPT）.md"，本参考文档不是最终确定版，仅供参考。
+
+### User Success
+
+**用户如何知道这个产品对他们有用？**
+
+| 用户类型 | 成功标志 |
+|----------|----------|
+| **独立创作者（林远）** | "AI终于记住我的角色了！改了设定它会自动提醒我哪些章节需要调整。"不再收到读者的"设定矛盾"投诉。 |
+| **技术开发者（张涛）** | "终于可以设计一个真正'活着'的AI，而不是一堆流程节点。"导出的AI有机体能够持续记住用户的故事。 |
+| **企业团队（世界观组）** | "每个人负责自己的模块，改动自动同步，再也不用开会对设定了。"每周设定争议从8-10次降到1-2次。 |
 
 ### 指标与愿景对齐验证
 
@@ -112,6 +184,16 @@ classification:
 | 免费→付费转化率 | 试用用户转付费的比例 | ≥5% |
 | 用户生命周期价值(LTV) | 付费用户平均贡献收入 | 取决于定价策略 |
 | 客户获取成本(CAC) | 获取一个付费用户的成本 | LTV/CAC ≥ 3 |
+
+#### 失败阈值定义（何时 Pivot 或放弃）
+
+| 验证阶段 | 指标 | 失败阈值 | 对应动作 |
+|----------|------|----------|----------|
+| MAV验证期（0-3个月） | 种子用户7日留存率 | < 30% | 重新审视UX设计，考虑Pivot |
+| MAV验证期（0-3个月） | 首次"哇"时刻转化率 | < 50% | 重新设计上手体验 |
+| MAV验证期（0-3个月） | NPS评分 | < 20 | 核心价值主张未被感知，需重新定位 |
+| 产品市场契合（3-6个月） | 自然增长占比 | < 15% | 产品不具备自传播能力，需重新评估 |
+| 产品市场契合（3-6个月） | 付费转化率 | < 2% | 商业模式不可行，需重新设计 |
 
 ### Technical Success
 
@@ -512,7 +594,8 @@ AI的回复明显更加温柔："被骂的感觉确实很糟糕。愿意说说�
 
 ### 旅程6：张涛的集成调试（技术开发者 - 边缘场景）
 
-*[V1.5+ 补充：覆盖导出有机体后的集成调试、API错误排查场景]*
+> **版本要求：V1.5+**
+> 覆盖导出有机体后的集成调试、API错误排查场景。
 
 ---
 
@@ -607,9 +690,33 @@ AI的回复明显更加温柔："被骂的感觉确实很糟糕。愿意说说�
 | 错误后继续使用率≥90% | 林远错误恢复旅程展示                                             |
 | 问题平均诊断时间≤15分钟 | 林远自助排查旅程展示（从发现异常到解决）                           |
 
+#### 版本边界对照
+
+| 旅程               | MAV（0-3月） | V1.5（3-6月） | V2.0（6-12月） |
+| ------------------ |-------------|---------------|----------------|
+| 林远-成功路径      | ✅ 完整实现  | —             | —              |
+| 林远-错误恢复      | ✅ 基础因果链 | ✅ 完整因果链可视化 | —         |
+| 张涛-成功路径      | ✅ 完整实现  | —             | —              |
+| 世界观组-成功+冲突 | ✅ 基础冲突检测 | ✅ 完整冲突处理UI | —        |
+| 张涛-集成调试      | ❌          | ✅             | —              |
+| 林远-自助排查      | ✅ 基础诊断  | ✅ 高级诊断     | —              |
+
 ---
 
 ## Domain-Specific Requirements
+
+### 系统底线（不妥协点）
+
+来自项目原始设计意图（总体想法.md），以下原则在任何情况下都不可妥协：
+
+| 底线 | 说明 | 工程体现 |
+|------|------|----------|
+| **强制溯源** | 没有溯源不允许进入系统 | Event Sourcing 为唯一事实源 |
+| **人类最终决策权** | 默认确认；四种模式全部开放且可配置到变量级 | 确认中心状态机 + 可审计事件 |
+| **高度模块化** | 底层健硕、可替换、可扩展，长期不会被某一套方案绑死 | Adapter trait 隔离所有外部系统 |
+| **可视化优先** | 复杂能力必须有对应 UI 支撑，不靠用户手写复杂配置才能用 | 三层体验架构 + UI约束选择 |
+| **按需上下文** | 避免 token 爆炸，用依赖图 + PACK 编译 + 事件触发控制规模 | 传播引擎 + 查询范围限定 |
+| **没有 MVP 心态** | 目标是最佳体验与效果；兜底来自灵活的底层与用户自定义 | MAV 不减架构骨架 |
 
 ### Compliance & Regulatory
 
@@ -632,36 +739,57 @@ AI的回复明显更加温柔："被骂的感觉确实很糟糕。愿意说说�
 | **可选自检** | 官方模板可配置自检 Agent | 用户自愿使用 |
 | **企业合规** | 企业部署时可对接外部审核 | 企业版插件 |
 
-#### 分阶段审核策略细化（需要进一步讨论确认）
+#### 分阶段审核策略细化 ✅ 已确认
 
-借鉴 Dify 的 Moderation 模型实践和隐私优先原则，建议分阶段实施：
+借鉴 Dify 的 Moderation 模型实践和隐私优先原则，分阶段实施：
 
-| 阶段 | 审核策略 | 说明 |
-|------|----------|------|
-| **MAV（本地优先）** | 完全零审核 | 用户完全拥有数据，平台无责任 |
-| **V1.5（P2P 协作）** | 零审核 + 可选自检 Agent | 用户可在本地配置自检规则 |
-| **V2.0（云服务）** | 零审核（私有项目）+ 社区准则（模板分享） | 仅对公开分享的模板进行轻量检查 |
+| 阶段 | 审核策略 | 说明 | 触发条件 |
+|------|----------|------|----------|
+| **MAV（本地优先）** | 完全零审核 | 用户完全拥有数据，平台不介入内容审查 | 本地运行（默认） |
+| **V1.5（P2P 协作）** | 零审核 + 可选自检 Agent（发布前钩子） | 用户可配置自检规则，在模板分享前执行 | 分享模板前（用户自选） |
+| **V2.0（云服务）** | 零审核（私有项目）+ 社区准则（模板分享） | 仅对公开分享的模板进行轻量检查 | 发布到模板市场 |
 
 **风险分析：**
 - 在提供云服务前，由于数据完全本地存储，平台内容风险可控
 - 模板分享阶段引入社区准则确认机制，非强制审核但保留移除权利
 
+**可审计机制（工程约束）：**
 ```yaml
 content_policy:
   # 本地创作：完全无限制
   private_workspace: no_moderation
 
-  # 模板分享：社区准则确认
+  # V1.5可选自检 Agent（发布前钩子）
+  self_check_agent:
+    enabled: true  # 用户自选
+    trigger: "pre_share"  # 仅在分享前触发，非持续审查
+    rules:
+      - type: "sensitive_keywords"
+        action: "warn"  # warn | block | confirm
+      - type: "consistency_check"
+        action: "confirm"
+    # 自检结果写入事件（可审计）
+    audit_event: "SelfCheckRun"
+
+  # 模板分享：社区准则确认（可审计）
   template_sharing:
     require_guidelines_acceptance: true
     guidelines_version: "1.0"
     community_standards: "https://platform.com/guidelines"
+    # 准则确认写入事件（可审计）
+    audit_event: "GuidelinesAccepted"
 
   # 企业版：可对接外部审核
   enterprise:
     external_moderation_api: optional
     audit_log_retention: "7years"
 ```
+
+**关键审计事件：**
+| 事件类型 | 写入时机 | 内容 |
+|----------|----------|------|
+| `GuidelinesAccepted` | 用户确认社区准则时 | version, hash, timestamp |
+| `SelfCheckRun` | 自检 Agent 执行后 | ruleset_version, result, warnings |
 
 #### 知识产权
 
@@ -684,89 +812,234 @@ content_policy:
   - 云端同步必须端到端加密
 ```
 
-#### 存储架构演进方案（需要进一步讨论确认）
+#### 存储架构演进方案 ✅ 已确认
 
-基于对 Graphiti（时序知识图谱框架）和 Memvid（Rust 单文件内存系统）的调研，建议采用分层存储架构：
+基于对 Graphiti（时序知识图谱框架）和 Memvid（Rust 单文件内存系统）的调研，采用分层存储架构：
 
 ```
 ┌─────────────────────────────────────────┐
 │  应用层：Context Unit / Edge / Policy    │
 ├─────────────────────────────────────────┤
-│  溯源层：Event Sourcing（参考 Memvid）   │
-│  - Embedded WAL                         │
-│  - Smart Frame（不可变事件单元）          │
-│  - Replay Engine（时间旅行）             │
+│  溯源层：Event Sourcing                  │
+│  - MAV: SQLite WAL（append-only）        │
+│  - V1.5+: 自研 ctxlog（借鉴 Memvid）     │
+│    · 单文件结构                          │
+│    · Embedded WAL + Checkpoint           │
+│    · 可配置 Durability 等级              │
 ├─────────────────────────────────────────┤
-│  图谱层：图数据库（参考 Graphiti）        │
-│  - MAV：Kuzu（嵌入式，Rust 绑定友好）     │
-│  - V1.5+：Neo4j/FalkorDB（服务端）       │
-├────────────────────────���────────────────┤
+│  图谱层：图投影（可替换）                 │
+│  - MAV 默认: IndraDB（纯 Rust，工程可控） │
+│  - 并行 PoC: Ladybug（能力评估中）        │
+│  - 远期: FalkorDB（服务端）              │
+├─────────────────────────────────────────┤
 │  存储层：                                │
-│  - 本地：单文件 MV2 格式（参考 Memvid）   │
-│  - 同步：P2P CRDT / 云同步               │
+│  - 运行态：SQLite/ctxlog                 │
+│  - 同步态：.ctxpkg 导出包（checkpoint+backup）│
+│  - 传输：iCloud/Drive（MAV）→ P2P+CRDT（V1.5+）│
 └─────────────────────────────────────────┘
 ```
 
-**关键调研发现：**
+---
 
-| 项目 | 核心技术 | 对本项目的启示 |
-|------|----------|----------------|
-| **Graphiti** | 双时序数据模型、增量更新、混合检索 | 图数据库（Kuzu/Neo4j）比 SQLite 更适合存储复杂关系网络 |
-| **Memvid** | 嵌入式 WAL、Smart Frame、时间旅行调试 | Rust 实现的单文件存储 + 溯源重放，与团队技术栈高度契合 |
-| **Dify** | Provider 三层架构、凭证隔离 | 模型配置与 Agent 绑定是核心设计 |
+##### MAV 阶段：SQLite WAL + .ctxpkg 导出包
 
-**技术性能对比：SQLite vs Kuzu（溯源系统场景）**
+**重要约束：SQLite WAL 不能直接同步**
 
-| 维度 | SQLite | Kuzu | 影响评估 |
-|------|--------|------|----------|
-| 写入吞吐 | ~50K events/sec | ~30K events/sec | SQLite 略优，但差距可接受 |
-| 图遍历查询 | JOIN 实现，O(n) 复杂度 | 原生图遍历，O(log n) | Kuzu 显著优于复杂关系查询 |
-| 存储膨胀 | 无压缩，约 1MB/1K events | 列式压缩，约 200KB/1K events | Kuzu 节省 80% 空间 |
-| 时序查询 | 需自建索引 | 内置时序支持 | Kuzu 减少开发工作量 |
-| Rust 集成 | 通过 rusqlite | 通过 FFI | 两者均可，Kuzu C++ 核心性能更优 |
+SQLite 官方明确限制：**WAL 模式不适用于网络文件系统**。原因：
+- WAL 需要共享内存（-shm 文件）协调多进程
+- 网络文件系统无法提供 WAL 所需的共享内存一致性与文件锁语义
 
-**关键性能指标参考**
+> 引用：SQLite 官方文档 - "WAL does not work over a network filesystem"
 
-| 项目 | 指标 | 来源 |
-|------|------|------|
-| Graphiti 检索延迟 | sub-200ms (at scale) | Zep 生产环境 |
-| Memvid 本地访问 | sub-5ms | Memvid 文档 |
-| SQLite 单文件上限 | ~280TB (理论) | SQLite 官方 |
+**工程推导**：iCloud/Drive 等跨设备同步系统同样无法保证 WAL 三文件（.db + .db-wal + .db-shm）的原子同步，因此我们不直接使用 WAL 文件作为跨设备同步单元。
 
-**Memvid WAL 结构参考（溯源系统实现参考）**
-
-Memvid 的嵌入式 WAL 设计可作为 Event Sourcing 溯源层实现参考：
+**解决方案：导出包（.ctxpkg）作为同步形态**
 
 ```
-WAL Record Header (48 bytes):
-  - sequence: u64 (8 bytes)      // 单调递增序列号
-  - length: u32 (4 bytes)        // payload 长度
-  - reserved: 4 bytes            // 对齐预留
-  - checksum: [u8; 32]           // Blake3 哈希校验
-
-Payload: 变长字节数组（实际 Event 数据）
+工作项目（SQLite WAL）
+    ↓
+一致性快照（SQLite checkpoint + online backup API）
+    ↓
+.ctxpkg 导出包（稳定、可验证、可压缩）
+    ↓
+iCloud/Drive 同步
 ```
 
-关键机制：
-- **原子写入**：header + payload 合并写入，防止半写损坏
-- **fsync 强制刷盘**：每次写入后强制同步，保证崩溃安全
-- **循环缓冲区**：WAL 区域满时触发 checkpoint，压缩到 Data Segments
+**导出包（.ctxpkg）结构**
+```yaml
+.ctxpkg/                    # ZIP 格式
+├── manifest.json           # 版本、校验和、时间戳、schema_version
+├── events/                 # SQLite checkpoint 后的数据
+│   └── events.msgpack      # MessagePack 序列化
+├── snapshot/               # 可选：图投影快照（加速启动）
+│   └── graph.bin
+├── attachments/            # 大文件（BLOB 分离存储）
+│   └── ...
+└── signature/              # 可选：签名验证
+    └── ...
+```
+
+**生成流程（一致性保证）**
+```rust
+// 1. SQLite checkpoint（WAL → 主库）
+// 2. Online backup API 生成一致性副本（不阻塞读取）
+// 3. 序列化为 MessagePack
+// 4. 计算校验和（BLAKE3）
+// 5. 打包为 .ctxpkg
+```
+
+**Durability 等级（SQLite 阶段映射）**
+
+| 等级 | SQLite 配置 | 语义 | 适用场景 |
+|------|------------|------|----------|
+| `FsyncEachAppend` | `PRAGMA synchronous=FULL` + 每事件 `fsync` | 最高可靠，吞吐最低 | 确认事件、关键变更 |
+| `GroupCommit` | `PRAGMA synchronous=NORMAL` + 定时 checkpoint | 均衡（默认） | 一般事件流 |
+| `NoFsync` | `PRAGMA synchronous=OFF` | 可能丢失最后 N 条 | 开发/测试环境 |
+
+> SQLite PRAGMA 文档：`synchronous` 控制 WAL 模式下的 fsync 行为。FULL 会在每次 checkpoint 时额外 sync WAL，增强掉电安全性。
+
+---
+
+##### V1.5 阶段：自研 ctxlog（借鉴 Memvid）
+
+**迁移触发条件（任一满足）**
+1. 单项目事件量 > 100 万
+2. 需要真正的单文件携带（.ctxpkg 解包即运行）
+3. SQLite WAL 性能瓶颈
+4. 需要跨存储后端适配（RocksDB/Postgres/S3）
+5. 需要"可验证的二进制格式规范"（生态开放）
+
+**ctxlog 设计目标（借鉴 Memvid，不硬抄）**
+```
+单文件结构（参考 Memvid MV2 格式）：
+┌─────────────────────────────────────────┐
+│ Header（4KB 对齐）                       │
+│ - magic/version                         │
+│ - 参数配置/TOC 指针                      │
+│ - 校验策略声明                           │
+├─────────────────────────────────────────┤
+│ Embedded WAL 区域                        │
+│ - RecordHeader: seq/len/checksum        │
+│ - checksum: BLAKE3-256 (32 bytes)       │
+│ - 循环缓冲区，checkpoint 后归档           │
+├─────────────────────────────────────────┤
+│ Data Segments（压缩后的事件数据）         │
+├─────────────────────────────────────────┤
+│ Footer/TOC（段目录 + 校验和）             │
+└─────────────────────────────────────────┘
+```
+
+**借鉴 Memvid 的关键机制**
+- **Checkpoint 协议**：WAL 区域满或定时触发，归档到 Data Segments（参考 Memvid `EmbeddedWal::record_checkpoint`）
 - **崩溃恢复**：启动时扫描 WAL，回放未 checkpoint 的记录
+- **Commit 语义**：`fsync` 策略可配置（与 Durability 等级对应）
 
-**参考实现**：Memvid 使用 Rust 实现，与团队技术栈匹配。
+**不硬抄的细节**
+- Header 大小：页对齐（4KB）而非固定 48 字节
+- 压缩算法：按事件类型可选（Zstd/LZ4）
+- 索引结构：根据查询模式定制（Memvid 用时间/向量和全文，ctxlog 用事件类型/时间）
 
-**技术债务风险评估（需要进一步讨论确认）**
+---
 
-| 方案 | 短期成本 | 长期风险 | 建议 |
-|------|----------|----------|------|
-| MAV 用 SQLite，后期迁移 Kuzu | 低 | 高：关系模型转图模型，迁移复杂 | 不推荐 |
-| MAV 直接用 Kuzu（嵌入式） | 中：团队学习曲线 | 低：架构一致，无需迁移 | 推荐 |
-| 自研 Memvid 模式存储 | 高：3-6 月开发周期 | 中：完全可控，但维护负担重 | 可选（团队 Rust 能力强） |
+##### 图数据库：双 PoC 决策门（均衡型策略）
 
-**技术债务预防建议：**
-- MAV 阶段直接使用 Kuzu（嵌入式图数据库）替代 SQLite，避免后期迁移成本
-- 溯源系统采用 Memvid 的 Smart Frame + Embedded WAL 模式
-- 团队具备 Rust+TypeScript 能力，可深度定制存储核心
+**MAV 默认：IndraDB（工程可控优先）**
+
+理由：
+- ✅ 纯 Rust 实现，无 FFI 集成成本
+- ✅ 可嵌入，可 server（gRPC）
+- ✅ Pluggable datastore（Memory/RocksDB/Postgres）
+- ⚠️ License：MPL-2.0（需合规评估）
+- ⚠️ 查询语言：无 Cypher（自有 DSL），需适配层
+- ⚠️ 表达能力：属性过滤缺少 OR/AND 逻辑组合（见 indradb#228）
+- ⚠️ Windows：非一等公民（见 indradb#125）
+
+**并行 PoC：Ladybug（能力评估）**
+
+理由：
+- ✅ 完整 Cypher 支持
+- ✅ 内置全文检索、向量索引（HNSW）
+- ✅ 活跃维护（v0.14.2，2026-01）
+- ⚠️ C++ 核心，FFI 集成成本
+- ⚠️ 发布链路：部分绑定从 CI nightly 获取（供应链稳定性风险）
+- ⚠️ Rename 后部分能力尚未完全就绪
+- ⚠️ **WASM/NodeJS 支持尚未就绪**（v0.12.0 release notes 明确声明 "not working yet"）
+
+**PoC 通过标准**
+
+| 测试项 | 说明 | IndraDB | Ladybug |
+|--------|------|---------|---------|
+| 四类边传播查询 | 多跳下游遍历（Reference/Activation） | 待测 | 待测 |
+| 影响范围子图导出 | 从 Unit A 导出受影响子图 | 待测 | 待测 |
+| 快照/恢复一致性 | checkpoint → 清空 → 导入 → 校验 | 待测 | 待测 |
+| 并发写入 | 1000 事件/秒 × 60 秒 | 待测 | 待测 |
+| 跨平台打包 | Windows/macOS/Linux CI 通过 | 待测 | 待测 |
+| License 合规 | MPL-2.0 分发策略 / MIT 简单性 | 需评估 | ✅ 简单 |
+
+> **IndraDB 参考**：https://github.com/indradb/indradb（MPL-2.0）
+> **Ladybug 参考**：https://github.com/LadybugDB/ladybug（活跃，但需验证发布链路）
+
+**GraphStore Trait（保证可替换性）**
+```rust
+#[async_trait]
+pub trait GraphStore: Send + Sync {
+    // 基础 CRUD
+    async fn create_vertex(&self, v: Vertex) -> Result<()>;
+    async fn create_edge(&self, e: Edge) -> Result<()>;
+
+    // 核心查询（项目必须）
+    async fn neighbors(&self, unit_id: Uuid, edge_type: EdgeType, direction: Direction) -> Result<Vec<Vertex>>;
+    async fn downstream(&self, unit_id: Uuid, edge_types: Vec<EdgeType>, max_depth: u32) -> Result<Vec<PropagationNode>>;
+    async fn subgraph(&self, root: Uuid, filters: SubgraphFilters) -> Result<GraphView>;
+
+    // 投影管理（checkpoint/恢复）
+    async fn checkpoint(&self) -> Result<CheckpointId>;
+    async fn restore(&self, checkpoint: CheckpointId) -> Result<()>;
+}
+```
+
+**Datastore 安全建议（IndraDB）**
+- 生产默认 RocksDB 或 Postgres
+- Sled datastore 仅用于实验（已知升级需手动迁移，且有数据安全限制）
+
+---
+
+##### 技术债务风险评估
+
+| 组件 | MAV 选择 | 风险点 | 预防措施 |
+|------|----------|--------|----------|
+| **EventStore** | SQLite WAL → ctxlog | 迁移时需事件转换工具 | 从第一天定义 `EventStore` trait，禁止业务层直接 SQL |
+| **GraphStore** | IndraDB（默认）+ Ladybug（PoC） | IndraDB 查询表达能力限制；Ladybug FFI 成本 | `GraphStore` trait 隔离；PoC Gate 决定最终默认 |
+| **Sync** | .ctxpkg 导出包 | 导出一致性、版本兼容 | checkpoint+backup API；manifest 版本化 |
+
+**关键债务预防措施**
+
+```rust
+// 1. EventStore trait - 硬约束，仅 Maintenance 例外
+pub trait EventStore: Send + Sync {
+    async fn append(&self, event: Event) -> Result<Sequence>;
+    async fn read_since(&self, seq: Sequence) -> Result<Vec<Event>>;
+    // 禁止：业务层直接 SQL 查询
+}
+
+// Maintenance/Diagnostics 模块只读查询（白名单逃生门）
+pub trait EventStoreDiagnostics {
+    async fn export_raw(&self) -> Result<Vec<u8>>;  // 仅导出、调试
+}
+
+// 2. GraphStore trait - 隔离图数据库细节
+pub trait GraphStore: Send + Sync {
+    // 仅暴露业务必要查询，不暴露 Cypher/图查询语言
+    async fn downstream(&self, ...) -> Result<Vec<PropagationNode>>;
+}
+
+// 3. StorageAdapter - 预留混合存储
+pub enum StorageStrategy {
+    EventSourced,      // 强制溯源（核心数据）
+    SimplifiedCrud,    // 辅助数据（用户偏好、UI 状态）
+    BatchAggregate,    // 批量导入模式
+}
+```
 
 #### 反馈回路安全约束
 
@@ -830,7 +1103,7 @@ Payload: 变长字节数组（实际 Event 数据）
 |--------|----------|----------|------|
 | 智谱AI | GLM Coding Plan | `https://open.bigmodel.cn/api/paas/v4` | 性价比高，Claude Pro 套餐的1/3价格 |
 | 月之暗面 | Kimi Coding | `https://api.moonshot.cn/v1` | 长上下文（200K） |
-| MiniMax | MiniMax Coding | `https://api.minimax.chat/v1` | 中文优化 |
+| MiniMax | MiniMax Coding | `https://api.minimaxi.com/v1` | 中文优化 |
 
 **Provider 配置格式**
 
@@ -903,36 +1176,98 @@ fallback_chain:
 - **Cherry Studio** (CherryHQ/cherry-studio): Provider Registry、智能路由
 - **Dify** (langgenius/dify): Model Runtime 三层架构、凭证管理
 
-#### 模型配置降级提醒机制（需要进一步讨论确认）
+#### 模型配置降级提醒机制 ✅ 已确认
 
-基于调研，每个 Unit 的模型配置应与 Agent 绑定，并包含降级提醒：
+**架构：Dify 式三层 + Binding + 决策日志**
+
+```
+┌─────────────────────────────────────┐
+│  ModelManager（全局配置）            │
+│  - Provider 注册表                    │
+│  - 全局默认模型                      │
+│  - 成本追踪/告警                     │
+├─────────────────────────────────────┤
+│  Provider（服务商抽象）              │
+│  - base_url/api_key                  │
+│  - 限流/重试/超时策略                │
+├─────────────────────────────────────┤
+│  Model（具体模型）                   │
+│  - 上下文长度/定价/能力标签           │
+├─────────────────────────────────────┤
+│  Binding（Unit/Agent 级覆盖）        │
+│  - Agent-specific 模型绑定           │
+│  - 降级链配置                        │
+│  - 降级时用户提醒                    │
+└─────────────────────────────────────┘
+```
+
+**Unit 级模型配置（与 Agent 绑定）**
 
 ```yaml
 unit_model_config:
   - unit_tag: "#核心设定"
-    # 绑定到特定的记忆/处理 Agent
     agent_binding: "consistency-checker"
     provider: "zhipu"
     model: "glm-4.7-coding"
     temperature: 0.3
-    # 降级策略（降级时提醒用户）
-    fallback:
+
+    # 降级链（MAV 实现同 Provider 降级；跨 Provider 后续增强）
+    fallback_chain:
       - provider: "zhipu"
         model: "glm-4.5-coding"
-        notify_user: true  # 降级时提醒
-      - provider: "local"
-        model: "qwen2.5-coder:7b"
-        notify_user: true
-        quality_warning: "本地模型质量可能下降，建议复查输出"
+        notify_user: true  # 静默通知：状态栏图标变化
 
-  - unit_tag: "#神经网络边"  # 核心概念：边的推理 Agent
-    agent_binding: "edge-propagator"
-    provider: "kimi"
-    model: "kimi-coding"
-    context_window: 200000  # 边传播可能需要长上下文
+      # MAV 后续阶段实现：
+      # - provider: "local"
+      #   model: "qwen2.5-coder:7b"
+      #   notify_user: true
+      #   quality_warning: "本地模型质量可能下降，建议复查输出"
+
+  - unit_tag: "#常规内容"
+    agent_binding: "reference-detector"
+    provider: "zhipu"
+    model: "glm-4.5-coding"
+    fallback_chain: []  # 无降级，直接失败
 ```
 
-**设计原则**：Unit 配置与 Agent 绑定是核心设计，而非附加功能。
+**决策日志（强制事件，必须落盘）**
+
+```rust
+struct ModelDegradedEvent {
+    timestamp: DateTime<Utc>,
+    correlation_id: String,      // 链路追踪
+
+    // 降级详情
+    from: ModelRef,              // 智谱/glm-4.7-coding
+    to: ModelRef,                // 智谱/glm-4.5-coding
+    reason: DegradeReason,       // Timeout | RateLimit | Cost | Quality
+
+    // 性能指标
+    latency_ms: u64,
+    cost_estimate: f64,
+
+    // 上下文
+    unit_id: Uuid,
+    agent_id: String,
+}
+```
+
+**用户提醒机制（MAV 阶段）**
+
+| 降级类型 | 提醒方式 | 内容 |
+|---------|---------|------|
+| 同 Provider 降级 | 静默通知 | 状态栏图标变化，可点击查看详情 |
+| 跨 Provider 降级 | 弹窗确认 | "已切换至备用模型，质量可能下降"（V1.5+） |
+| 降级至本地模型 | 强制确认 | "已进入离线模式，部分功能受限"（V1.5+） |
+
+**设计原则**
+1. Unit 配置与 Agent 绑定是核心设计
+2. **任何模型降级必须写入 EventStore**（否则审计成空话）
+3. MAV 实现同 Provider 降级链闭环；跨 Provider 作为后续增强
+
+**参考实现**
+- **Cherry Studio** (CherryHQ/cherry-studio): Provider Registry、智能路由
+- **Dify** (langgenius/dify): Model Runtime 三层架构、凭证管理
 
 ### Integration Requirements
 
@@ -1007,6 +1342,72 @@ organism_package:
 | 版本兼容 | 新版本读取旧格式时，未知字段保留但不处理；旧版本读取新格式时，忽略未知字段 |
 | 模板继承 | 支持基于现有模板创建新模板，可覆盖或扩展任意字段 |
 | 字段校验 | 仅校验核心必填字段（version, schema_version, metadata），其余字段由模板自行定义规则 |
+
+---
+
+### 已确认/暂定（均衡型）决策总结
+
+> 本节汇总 Step 5 所有技术选型决策，明确"已确认"与"暂定"状态，并记录 PoC Gate 与决策依据。
+
+#### MAV 阶段（0-3 个月）
+
+| 组件 | 决策 | 状态 | 关键依据 |
+|------|------|------|----------|
+| **内容审核** | MAV 完全零审核 | ✅ 已确认 | 本地优先/用户全权拥有数据 |
+| **EventStore** | SQLite WAL（运行态）+ .ctxpkg 导出包（同步态） | ⚠️ 暂定 | SQLite 官方限制：WAL 不适用于网络文件系统；.ctxpkg 使用 checkpoint+backup API 生成一致性快照 |
+| **GraphStore** | **IndraDB 默认**（工程可控）；Ladybug 并行 PoC（能力评估） | ⚠️ 暂定 | 均衡型选择：IndraDB 纯 Rust 降低 MAV 工程风险；Ladybug Cypher+检索能力待评估 |
+| **协作同步** | 文件级同步（iCloud/Drive），同步单位为 .ctxpkg | ✅ 已确认 | 与 SQLite WAL 解耦，避免多文件同步风险 |
+| **LLM Provider** | Dify 式三层 + 同 Provider 降级链 + 决策日志 | ✅ 已确认 | 降级必须写入 EventStore，保证可审计 |
+
+#### V1.5 阶段（3-6 个月）
+
+| 组件 | 决策 | 状态 | 迁移触发条件 |
+|------|------|------|--------------|
+| **EventStore** | 自研 ctxlog（借鉴 Memvid WAL/Checkpoint） | ⚠️ 暂定 | 事件量>100万 / 需真正单文件 / SQLite 瓶颈 |
+| **协作同步** | Yrs（Yjs Rust port）+ libp2p | ⚠️ 暂定 | P2P 实时协作成为核心场景 |
+| **图数据库** | PoC Gate 决定最终默认（IndraDB vs Ladybug） | ⚠️ 暂定 | 通过标准：四类边传播查询、影响范围导出、跨平台打包、License 合规 |
+
+#### 关键 PoC Gate
+
+**GraphStore PoC（MAV 阶段并行）**
+
+| 测试项 | IndraDB | Ladybug | 权重 |
+|--------|---------|---------|------|
+| 四类边传播查询 | 待测 | 待测 | P0 |
+| 影响范围子图导出 | 待测 | 待测 | P0 |
+| 快照/恢复一致性 | 待测 | 待测 | P0 |
+| 1000 事件/秒写入 | 待测 | 待测 | P1 |
+| 跨平台打包成本 | 待测 | 待测 | P1 |
+| License 合规 | MPL-2.0（需评估） | MIT（简单） | P2 |
+
+**决策门**：MAV 验证期结束前（3 个月内）完成 PoC，通过标准全部达标者成为 V1.5 默认。
+
+#### 技术债务预防检查清单
+
+以下选择当前采用，但明确标为"暂定"，并给出替换触发信号：
+
+| 组件 | MAV选择 | 状态 | 替换触发条件 | 备选方案 |
+|------|---------|------|--------------|----------|
+| **EventStore** | SQLite WAL | ⚠️ 暂定 | 事件量>100万 / 需真正单文件 / SQLite瓶颈 | 自研 ctxlog（借鉴Memvid） |
+| **GraphStore** | Ladybug | ⚠️ 暂定 | 生态活跃度下降/关键功能缺口/FFI成本不可控 | IndraDB（默认）/ FalkorDB（远期） |
+| **协作同步** | 文件级同步（iCloud/Drive） | ⚠️ 暂定 | 实时协作/多人工作台成为P0 | Yrs + libp2p |
+| **LLM Provider** | Dify式三层 + Agent覆盖 | ⚠️ 暂定 | 出现更强的行业标准 | 待评估 |
+
+**核心自研模块**（项目护城河，不替换）：
+- [x] Context Unit 抽象与四种边类型系统
+- [x] 变更传播引擎（Propagation Engine）
+- [x] 确认中心（Confirmation Center）
+- [x] 溯源可视化（Provenance Visualization）
+- [x] `.ctxpkg` 数据格式规范
+
+**已确认实现项**：
+- [ ] `EventStore` trait 已定义，业务层禁止直接 SQL
+- [ ] `GraphStore` trait 已定义，不暴露 Cypher/图查询语言到业务层
+- [ ] `.ctxpkg` 导出流程：checkpoint → backup → 校验和 → 打包
+- [ ] `ModelDegradedEvent` 写入 EventStore（审计）
+- [ ] IndraDB MPL-2.0 License 分发策略文档（如需桌面客户端分发）
+
+---
 
 ### Risk Mitigations
 
