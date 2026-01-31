@@ -4,6 +4,7 @@ inputDocuments:
   - '_bmad-output/planning-artifacts/product-brief-AI 上下文工程可视化项目-2026-01-29.md'
   - '_bmad-output/analysis/brainstorming-session-2026-01-22.md'
   - '总体想法.md'
+  - '拓展信息/项目技术方案第二版（GPT）.md'
 documentCounts:
   briefs: 1
   research: 0
@@ -29,6 +30,7 @@ classification:
 > **核心成功验证问题：** 用户是否真的感知到"AI有状态"带来的价值差异？
 >
 > 本项目的成功不是功能堆砌或用户数增长，而是验证一个根本命题：**通过上下文工程赋予AI状态，能让AI真正"活"起来，并被用户清晰感知。**
+> 本项目的技术选型参考文档为"拓展信息/项目技术方案第二版（GPT）.md"，本参考文档不是最终确定版，仅供参考。
 
 ### 指标与愿景对齐验证
 
